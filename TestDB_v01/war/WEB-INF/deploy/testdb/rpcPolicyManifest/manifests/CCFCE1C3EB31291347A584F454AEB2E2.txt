@@ -1,0 +1,2 @@
+serviceClass: com.javabeans.test.client.MovieService
+path: 34FDE97CDD9FE75318A63509C96460DB.gwt.rpc
