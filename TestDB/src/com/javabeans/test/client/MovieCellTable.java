@@ -11,6 +11,7 @@ import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.ListDataProvider;
 import com.javabeans.test.shared.Movie;
@@ -98,13 +99,13 @@ public class MovieCellTable extends Composite {
 
 		table.addColumn(wikiMovieIDColumn, "Wikipedia movie ID");
 		table.addColumn(freebaseMovieIDColumn, "Freebase movie ID");
-		table.addColumn(titleColumn, "Name");
-		table.addColumn(releaseDateColumn, "Movie release date");
-		table.addColumn(boxOfficeRevenueColumn, "Movie box office revenue");
-		table.addColumn(runtimeColumn, "Movie runtime");
-		table.addColumn(languagesColumn, "Movie languages");
-		table.addColumn(CountriesColumn, "Movie countries");
-		table.addColumn(genresColumn, "Movie genres");
+		table.addColumn(titleColumn, "Title");
+		table.addColumn(releaseDateColumn, "Release date");
+		table.addColumn(boxOfficeRevenueColumn, "Box office revenue");
+		table.addColumn(runtimeColumn, "Runtime");
+		table.addColumn(languagesColumn, "Languages");
+		table.addColumn(CountriesColumn, "Countries");
+		table.addColumn(genresColumn, "Genres");
 
 		wikiMovieIDColumn.setSortable(true);
 		freebaseMovieIDColumn.setSortable(true);
@@ -175,6 +176,10 @@ public class MovieCellTable extends Composite {
 		vPanel.add(table);
 		vPanel.add(pager);
 
+	}
+	
+	public CellTable<Movie> getTable() {
+		return table;
 	}
 
 	public ListDataProvider<Movie> getDataProvider() {

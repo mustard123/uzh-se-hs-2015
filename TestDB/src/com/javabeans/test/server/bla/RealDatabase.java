@@ -1,18 +1,15 @@
 package com.javabeans.test.server.bla;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.javabeans.test.shared.Movie;
 import com.javabeans.test.shared.MovieQuery;
+import com.javabeans.test.shared.MovieQueryResult;
 
 
 public class RealDatabase implements Database {
 
 	@Override
-	public List<Movie> query(MovieQuery query) {
+	public MovieQueryResult query(MovieQuery query) {
 
 		// TODO real database implementation
 		
-		return new ArrayList<>();
+		return new MovieQueryResult();
 	}
 }

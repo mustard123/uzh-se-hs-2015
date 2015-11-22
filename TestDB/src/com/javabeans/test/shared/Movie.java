@@ -1,11 +1,15 @@
 package com.javabeans.test.shared;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class Movie implements IsSerializable {
 
+public class Movie implements IsSerializable, Serializable{
+
+	private static final long serialVersionUID = 1L;
+	
 	private Long wikiMovieID;
 	private String freebaseMovieID;
 	private String title;

@@ -28,7 +28,7 @@ public class TsvReader {
 
 		return movies;
 	}
-
+	
 	private Movie parseMovie(String line) {
 
 		List<String> columns = Splitter.on('\t').trimResults()
@@ -63,9 +63,12 @@ public class TsvReader {
 				.split(cleanList);
 		List<String> values = new ArrayList<>();
 		for (String value : keyValues.values()) {
-			values.add(value.replace("\"", ""));
+			values.add(value.replace("\"", "").trim());
 		}
 		return values;
 	}
+	
+	
+	
 
 }

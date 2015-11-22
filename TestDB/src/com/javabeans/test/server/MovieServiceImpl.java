@@ -5,9 +5,10 @@ import java.util.List;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.javabeans.test.client.MovieService;
 import com.javabeans.test.server.bla.Database;
-import com.javabeans.test.server.bla.StaticFileBasedDatabase;
+import com.javabeans.test.server.bla.SerializedStaticFileBasedDatabase;
 import com.javabeans.test.shared.Movie;
 import com.javabeans.test.shared.MovieQuery;
+import com.javabeans.test.shared.MovieQueryResult;
 
 /**
  * The server-side implementation of the RPC service.
@@ -16,14 +17,16 @@ import com.javabeans.test.shared.MovieQuery;
 public class MovieServiceImpl extends RemoteServiceServlet implements
 		MovieService {
 
-	// use interface in declaration so that you can change the implementation 
-	private Database database = new StaticFileBasedDatabase();
-	
-	public List<Movie> getMoviesFromServer(MovieQuery query) {
+	// use interface in declaration so that you can change the implementation
+	private Database database = new SerializedStaticFileBasedDatabase(Thread
+			.currentThread().getContextClassLoader()
+			.getResourceAsStream("movies_80000.serialized"));
+
+	public MovieQueryResult getMoviesFromServer(MovieQuery query) {
 		// Escape data from the client to avoid cross-site script
 		// vulnerabilities.
-//		query = escapeHtml(query);
-		
+		// query = escapeHtml(query);
+
 		return database.query(query);
 	}
 

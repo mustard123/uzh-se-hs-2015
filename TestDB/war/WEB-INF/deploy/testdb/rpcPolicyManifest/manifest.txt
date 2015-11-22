@@ -1,2 +1,3 @@
 # Module testdb
 # RPC service class, partial path of RPC policy file
+com.javabeans.test.client.MovieService, FE0D11A5F94994D760A928130D0B9BF6.gwt.rpc
