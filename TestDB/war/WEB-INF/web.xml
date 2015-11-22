@@ -16,6 +16,17 @@
     <url-pattern>/testdb/greet</url-pattern>
   </servlet-mapping>
   
+  
+  <servlet>  
+     <servlet-name>ExportCsvServlet</servlet-name>  
+     <servlet-class>com.javabeans.test.server.ExportCsvServlet</servlet-class>  
+  </servlet>
+    
+  <servlet-mapping>  
+     <servlet-name>ExportCsvServlet</servlet-name>  
+     <url-pattern>/exportcsv</url-pattern>  
+  </servlet-mapping>  
+  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>TestDB.html</welcome-file>

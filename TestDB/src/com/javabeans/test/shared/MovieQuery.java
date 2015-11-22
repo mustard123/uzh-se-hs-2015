@@ -5,7 +5,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class MovieQuery implements IsSerializable {
 
 	private int offset;
-	private int limit;
+	private Integer limit;
 
 	private String name;
 	private Long wikiMovieId;
@@ -29,11 +29,11 @@ public class MovieQuery implements IsSerializable {
 		this.offset = offset;
 	}
 
-	public int getLimit() {
+	public Integer getLimit() {
 		return limit;
 	}
 
-	public void setLimit(int limit) {
+	public void setLimit(Integer limit) {
 		this.limit = limit;
 	}
 

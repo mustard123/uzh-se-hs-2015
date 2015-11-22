@@ -38,9 +38,10 @@ public class StaticFileBasedDatabase implements Database {
 				// .filter(yearPredicate(query.getYear()))
 				// etc.
 				.toList();
+		int limit = query.getLimit() == null ? Integer.MAX_VALUE : query.getLimit();
 		ArrayList<Movie> movieListSlice = new ArrayList<>(FluentIterable.from(filteredMovies)
 				.skip(query.getOffset())
-				.limit(query.getLimit())
+				.limit(limit)
 				.toList());
 		
 		MovieQueryResult result = new MovieQueryResult();

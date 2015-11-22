@@ -1,12 +1,9 @@
 package com.javabeans.test.server;
 
-import java.util.List;
-
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.javabeans.test.client.MovieService;
 import com.javabeans.test.server.bla.Database;
-import com.javabeans.test.server.bla.SerializedStaticFileBasedDatabase;
-import com.javabeans.test.shared.Movie;
+import com.javabeans.test.server.bla.DatabaseFactory;
 import com.javabeans.test.shared.MovieQuery;
 import com.javabeans.test.shared.MovieQueryResult;
 
@@ -18,9 +15,7 @@ public class MovieServiceImpl extends RemoteServiceServlet implements
 		MovieService {
 
 	// use interface in declaration so that you can change the implementation
-	private Database database = new SerializedStaticFileBasedDatabase(Thread
-			.currentThread().getContextClassLoader()
-			.getResourceAsStream("movies_80000.serialized"));
+	private Database database = DatabaseFactory.getInstance();
 
 	public MovieQueryResult getMoviesFromServer(MovieQuery query) {
 		// Escape data from the client to avoid cross-site script

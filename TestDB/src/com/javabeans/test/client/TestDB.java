@@ -1,8 +1,5 @@
 package com.javabeans.test.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -11,8 +8,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -56,8 +52,18 @@ public class TestDB implements EntryPoint {
 	private TextBox languageField = new TextBox();
 	private TextBox genreField = new TextBox();
 	private Button searchButton = new Button("Search");
+	private Button exportButton = new Button("Export");
 
 	private MovieCellTable movietable = new MovieCellTable();
+	private MovieQuery currentQuery = new MovieQuery();
+	private AsyncDataProvider<Movie> movieTableDataProvider = new AsyncDataProvider<Movie>() {
+		@Override
+		protected void onRangeChanged(HasData<Movie> display) {
+			updateMovies(display.getVisibleRange().getStart(), display
+					.getVisibleRange().getLength());
+		}
+	};
+
 	private Label titleLabel = new Label("Title");
 	private Label yearLabel = new Label("Year (e.g. '1990')");
 	private Label CountryLabel = new Label("Country");
@@ -67,7 +73,9 @@ public class TestDB implements EntryPoint {
 	private TabLayoutPanel tabPanel = new TabLayoutPanel(2.5, Unit.EM);
 
 	private Label addPlaceholder = new Label("Placeholder for ADD");
-	private Label mapPlaceholder = new Label("Placeholder for Map");
+
+	// private SliderBarSimpleHorizontal mapSliderBarSimpleHorizontal = new
+	// SliderBarSimpleHorizontal(8, "80", true);
 
 	// private SliderBarSimpleHorizontal mapSliderBarSimpleHorizontal = new
 	// SliderBarSimpleHorizontal(8, "80", true);
@@ -85,6 +93,7 @@ public class TestDB implements EntryPoint {
 		genre.setStyleName("flowPanel_inline");
 		search.setStyleName("flowPanel_inline");
 		searchButton.setStyleName("flowPanel_inline");
+		exportButton.setStyleName("flowPanel_inline");
 
 		name.add(titleLabel);
 		name.add(nameField);
@@ -104,10 +113,10 @@ public class TestDB implements EntryPoint {
 		searchMenu.add(country);
 		searchMenu.add(genre);
 		searchMenu.add(search);
+		searchMenu.add(exportButton);
 
 		scrollPanelTable.add(movietable);
 
-		map.add(mapPlaceholder);
 		// mapSliderBarSimpleHorizontal.setHeight("100px");
 		// map.add(mapSliderBarSimpleHorizontal);
 
@@ -116,10 +125,11 @@ public class TestDB implements EntryPoint {
 		tabPanel.getElement().getStyle().setMarginBottom(10.0, Unit.PX);
 
 		tabPanel.add(scrollPanelTable, "table");
-		tabPanel.add(map, "map");
+		tabPanel.add(new ScrollPanel(map), "map");
 
 		vPanel.add(searchMenu);
 		vPanel.add(tabPanel);
+		// vPanel.add(mapSliderBarSimpleHorizontal);
 
 		// tabPanel.addSelectionHandler(new SelectionHandler<Integer>() {
 		// public void onSelection(SelectionEvent<Integer> event) {
@@ -150,47 +160,62 @@ public class TestDB implements EntryPoint {
 		searchAtEnter(countryField);
 		searchAtEnter(languageField);
 		searchAtEnter(genreField);
+		movieTableDataProvider.addDataDisplay(movietable.getTable());
+
+		WorldMap worldMap = new WorldMap();
+		map.add(worldMap);
 
 		RootPanel.get().add(vPanel);
+
+		exportButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				String exportUrl = Window.Location.createUrlBuilder()
+					.setPath("exportcsv")
+					.setParameter("name", currentQuery.getName())
+					.setParameter("year", currentQuery.getYear())
+					.setParameter("country", currentQuery.getCountry())
+					.setParameter("language", currentQuery.getLanguage())
+					.setParameter("genre", currentQuery.getGenre())
+					.buildString();
+
+				Window.Location.replace(exportUrl);
+			}
+		});
 
 	}
 
 	private void searchMovies() {
-		final MovieQuery query = new MovieQuery();
-		query.setName(nameField.getText());
-		query.setYear(yearField.getText());
-		query.setCountry(countryField.getText());
-		query.setLanguage(languageField.getText());
-		query.setGenre(genreField.getText());
-		// TODO set other search criteria on query
-		// query.setWikiMovieId(wikiMovieId);
-		// etc.
+		currentQuery.setName(nameField.getText());
+		currentQuery.setYear(yearField.getText());
+		currentQuery.setCountry(countryField.getText());
+		currentQuery.setLanguage(languageField.getText());
+		currentQuery.setGenre(genreField.getText());
+		updateMovies(0, movietable.getTable().getVisibleRange().getLength());
+	}
 
-		AsyncDataProvider<Movie> provider = new AsyncDataProvider<Movie>() {
-			@Override
-			protected void onRangeChanged(HasData<Movie> display) {
-				query.setOffset(display.getVisibleRange().getStart());
-				query.setLimit(display.getVisibleRange().getLength());
-				movieService.getMoviesFromServer(query,
-						new AsyncCallback<MovieQueryResult>() {
-							public void onFailure(Throwable caught) {
-								System.out.println("Failed: "
-										+ caught.toString());
-							}
+	private void updateMovies(int start, int length) {
+		currentQuery.setOffset(start);
+		currentQuery.setLimit(length);
+		movieService.getMoviesFromServer(currentQuery,
+				new AsyncCallback<MovieQueryResult>() {
+					public void onFailure(Throwable caught) {
+						System.out.println("Failed: " + caught.toString());
+					}
 
-							public void onSuccess(MovieQueryResult result) {
-								System.out.println(
-										"Success: return " + result.getMovies().size()
-										+ " of " + result.getTotalMovieCount()
-										+ " movies.");
+					public void onSuccess(MovieQueryResult result) {
+						System.out.println("Success: return "
+								+ result.getMovies().size() + " of "
+								+ result.getTotalMovieCount() + " movies.");
 
-								updateRowData(query.getOffset(), result.getMovies());
-								updateRowCount(result.getTotalMovieCount(), true);
-							}
-						});
-			}
-		};
-		provider.addDataDisplay(movietable.getTable());
+						if (result.getMovies().size() == 0) {
+							Window.alert("No movies found that match selected criteria");
+						}
+						movieTableDataProvider.updateRowData(
+								currentQuery.getOffset(), result.getMovies());
+						movieTableDataProvider.updateRowCount(
+								result.getTotalMovieCount(), true);
+					}
+				});
 	}
 
 	private void searchAtEnter(TextBox filter) {

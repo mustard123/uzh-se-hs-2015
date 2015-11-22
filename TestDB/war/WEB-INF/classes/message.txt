@@ -1,3 +1,0 @@
-Linda; 21
-Teddy; 22 
-Pi; 33

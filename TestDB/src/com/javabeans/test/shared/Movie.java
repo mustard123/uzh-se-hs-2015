@@ -141,5 +141,35 @@ public class Movie implements IsSerializable, Serializable{
 		System.out.println(getInformation());
 
 	}
+	
+	public String getLangAsStringNoComma(){
+		String nocomma="";
+		for(String e : languages){
+			nocomma=nocomma+e+"/";
+			
+		}
+		return nocomma;
+		
+	}
+	
+	public String getCountriesAsStringNoComma(){
+		String nocomma="";
+		for(String e : countries){
+			nocomma=nocomma+e+"/";
+			
+		}
+		return nocomma;
+		
+	}
+	
+	public String getGenresAsStringNoComma(){
+		String nocomma="";
+		for(String e : genres){
+			nocomma=nocomma+e+"/";
+			
+		}
+		return nocomma;
+		
+	}
 
 }
