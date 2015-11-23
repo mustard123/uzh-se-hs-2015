@@ -2,13 +2,18 @@ package com.javabeans.test.server.bla;
 
 public class DatabaseFactory {
 
-//	private static Database instance = new StaticFileBasedDatabase(Thread.currentThread().getContextClassLoader()
-//					.getResourceAsStream("movies_80000.tsv"));
-	
-	private static Database instance  = new SerializedStaticFileBasedDatabase(
-			Thread.currentThread().getContextClassLoader()
-					.getResourceAsStream("movies_80000.serialized"));
+	// private static Database instance = new FileBasedDatabase(new
+	// TsvFileMovieDataProvider(Thread.currentThread()
+	// .getContextClassLoader().getResourceAsStream("movies_80000.tsv")));
 
+	private static Database instance = new FileBasedDatabase(new SerializedFileDataProvider(Thread.currentThread()
+			.getContextClassLoader().getResourceAsStream("movies_80000.serialized")));
+
+	/**
+	 * Returns the database instance.
+	 * 
+	 * @return the database instance
+	 */
 	public static Database getInstance() {
 		return instance;
 	}

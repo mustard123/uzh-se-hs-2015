@@ -5,11 +5,10 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
-public class Movie implements IsSerializable, Serializable{
+public class Movie implements IsSerializable, Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private Long wikiMovieID;
 	private String freebaseMovieID;
 	private String title;
@@ -30,9 +29,8 @@ public class Movie implements IsSerializable, Serializable{
 		this.setInformation(information);
 	}
 
-	public Movie(Long wikiMovieID, String freebaseMovieID, String title,
-			String year, String boxOfficeRevenue, String length,
-			List<String> languages, List<String> countries, List<String> genres) {
+	public Movie(Long wikiMovieID, String freebaseMovieID, String title, String year, String boxOfficeRevenue,
+			String length, List<String> languages, List<String> countries, List<String> genres) {
 
 		this.wikiMovieID = wikiMovieID;
 		this.freebaseMovieID = freebaseMovieID;
@@ -141,35 +139,4 @@ public class Movie implements IsSerializable, Serializable{
 		System.out.println(getInformation());
 
 	}
-	
-	public String getLangAsStringNoComma(){
-		String nocomma="";
-		for(String e : languages){
-			nocomma=nocomma+e+"/";
-			
-		}
-		return nocomma;
-		
-	}
-	
-	public String getCountriesAsStringNoComma(){
-		String nocomma="";
-		for(String e : countries){
-			nocomma=nocomma+e+"/";
-			
-		}
-		return nocomma;
-		
-	}
-	
-	public String getGenresAsStringNoComma(){
-		String nocomma="";
-		for(String e : genres){
-			nocomma=nocomma+e+"/";
-			
-		}
-		return nocomma;
-		
-	}
-
 }

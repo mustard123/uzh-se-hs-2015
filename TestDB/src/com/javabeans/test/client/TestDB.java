@@ -177,7 +177,6 @@ public class TestDB implements EntryPoint {
 					.setParameter("language", currentQuery.getLanguage())
 					.setParameter("genre", currentQuery.getGenre())
 					.buildString();
-
 				Window.Location.replace(exportUrl);
 			}
 		});
