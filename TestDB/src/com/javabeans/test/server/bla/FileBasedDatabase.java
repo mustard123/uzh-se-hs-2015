@@ -1,5 +1,6 @@
 package com.javabeans.test.server.bla;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -38,7 +39,7 @@ public class FileBasedDatabase implements Database {
 				.filter(countryPredicate(query.getCountry()))
 				.filter(languagePredicate(query.getLanguage()))
 				.filter(genrePredicate(query.getGenre()))
-				.toList();
+				.toSortedList(query.getSortColumn().getComparator(query.isAscending()));
 		
 		int limit = query.getLimit() == null ? Integer.MAX_VALUE : query.getLimit();
 		ArrayList<Movie> movieListSlice = new ArrayList<>(FluentIterable.from(filteredMovies)
@@ -52,7 +53,6 @@ public class FileBasedDatabase implements Database {
 		result.setTotalMovieCount(filteredMovies.size());
 		return result;
 	}
-	
 
 	/**
 	 * Parse the movie file (only once) and cache it in movieListCache
@@ -62,7 +62,6 @@ public class FileBasedDatabase implements Database {
 			this.movieListCache.addAll(dataProvider.getMovies());
 		}
 	}
-
 
 	private static Predicate<Movie> namePredicate(final String title) {
 		return new Predicate<Movie>() {

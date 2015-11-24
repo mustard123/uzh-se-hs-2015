@@ -6,6 +6,8 @@ public class MovieQuery implements IsSerializable {
 
 	private int offset;
 	private Integer limit;
+	private boolean ascending;
+	private SortColumn sortColumn;
 
 	private String name;
 	private Long wikiMovieId;
@@ -35,6 +37,22 @@ public class MovieQuery implements IsSerializable {
 
 	public void setLimit(Integer limit) {
 		this.limit = limit;
+	}
+
+	public boolean isAscending() {
+		return ascending;
+	}
+
+	public void setAscending(boolean ascending) {
+		this.ascending = ascending;
+	}
+	
+	public SortColumn getSortColumn() {
+		return sortColumn;
+	}
+
+	public void setSortColumn(SortColumn sortColumn) {
+		this.sortColumn = sortColumn;
 	}
 
 	public String getName() {

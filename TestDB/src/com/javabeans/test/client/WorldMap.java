@@ -22,62 +22,44 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.javabeans.test.shared.Movie;
 
-public class WorldMap extends Widget{
+public class WorldMap extends Widget {
 
 	private Element container;
-	
-	
-	public WorldMap()
-	{
+
+	public WorldMap() {
 		container = DOM.createDiv();
 		container.setId("worldMap");
-		
+
 		setElement(container);
-		
+
 	}
-	
+
 	@Override
-	protected void onLoad()
-	{
+	protected void onLoad() {
 		super.onLoad();
 		createWorldMap();
 	}
-	
-	
-	
-	public static native void createWorldMap() 
+
+	public static native void createWorldMap()
 	/*-{
-		
 
 		var data = $wnd.google.visualization.arrayToDataTable([
-          ['Country', 'Popularity'],
-          ['Germany', 200],
-          ['United States', 300],
-          ['Brazil', 400],
-          ['Canada', 500],
-          ['France', 600],
-          ['RU', 700]
-        ]);
+				[ 'Country', 'Popularity' ], [ 'Germany', 200 ],
+				[ 'United States', 300 ], [ 'Brazil', 400 ], [ 'Canada', 500 ],
+				[ 'France', 600 ], [ 'RU', 700 ] ]);
 
-        var options = {};
-        options['dataMode'] = 'regions';
+		var options = {};
+		options['dataMode'] = 'regions';
 
-        var container = $wnd.document.getElementById('worldMap');
-        
-        
-        var geomap = new $wnd.google.visualization.GeoMap(container);
-        
-        options['height'] = '777';
-        options['width'] = '1400';
+		var container = $wnd.document.getElementById('worldMap');
 
-        geomap.draw(data, options);
+		var geomap = new $wnd.google.visualization.GeoMap(container);
+
+		options['height'] = '777';
+		options['width'] = '1400';
+
+		geomap.draw(data, options);
 
 	}-*/;
-	
 
 }
-
-
-
-
-

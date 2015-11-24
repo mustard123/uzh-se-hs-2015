@@ -9,12 +9,15 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.http.client.UrlBuilder;
+import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
+import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
@@ -25,14 +28,25 @@ import com.google.gwt.view.client.HasData;
 import com.javabeans.test.shared.Movie;
 import com.javabeans.test.shared.MovieQuery;
 import com.javabeans.test.shared.MovieQueryResult;
+import com.javabeans.test.shared.SortColumn;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class TestDB implements EntryPoint {
 
-	private final MovieServiceAsync movieService = GWT
-			.create(MovieService.class);
+	private int currentYear = 2015;
+	private int startYear = 1888;
+	private int endYear = 2015;
+
+	private final MovieServiceAsync movieService = GWT.create(MovieService.class);
+
+	private HorizontalPanel hPanelSlider = new HorizontalPanel();
+
+	private ListBox dropBox = new ListBox(true);
+
+	private Button yearUP = new Button("year UP");
+	private Button yearDOWN = new Button("year DOWN");
 
 	private VerticalPanel vPanel = new VerticalPanel();
 	private ScrollPanel scrollPanelTable = new ScrollPanel();
@@ -45,6 +59,7 @@ public class TestDB implements EntryPoint {
 	private HorizontalPanel country = new HorizontalPanel();
 	private HorizontalPanel genre = new HorizontalPanel();
 	private HorizontalPanel search = new HorizontalPanel();
+	private HorizontalPanel export = new HorizontalPanel();
 
 	private TextBox nameField = new TextBox();
 	private TextBox yearField = new TextBox();
@@ -93,7 +108,7 @@ public class TestDB implements EntryPoint {
 		genre.setStyleName("flowPanel_inline");
 		search.setStyleName("flowPanel_inline");
 		searchButton.setStyleName("flowPanel_inline");
-		exportButton.setStyleName("flowPanel_inline");
+//		export.setStyleName("flowPanel_inline");
 
 		name.add(titleLabel);
 		name.add(nameField);
@@ -119,6 +134,23 @@ public class TestDB implements EntryPoint {
 
 		// mapSliderBarSimpleHorizontal.setHeight("100px");
 		// map.add(mapSliderBarSimpleHorizontal);
+		hPanelSlider.add(yearDOWN);
+		hPanelSlider.add(dropBox);
+		hPanelSlider.add(yearUP);
+
+		for (int i = startYear; i < endYear + 1; i++) {
+			String year = Integer.toString(i);
+
+			dropBox.addItem(year);
+		}
+
+		dropBox.setSelectedIndex(endYear - startYear);
+
+		dropBox.setHeight("50px");
+		dropBox.setWidth("100px");
+		yearUP.setHeight("50px");
+		yearDOWN.setHeight("50px");
+		map.add(hPanelSlider);
 
 		tabPanel.setHeight("800px");
 		tabPanel.setAnimationDuration(1000);
@@ -160,23 +192,49 @@ public class TestDB implements EntryPoint {
 		searchAtEnter(countryField);
 		searchAtEnter(languageField);
 		searchAtEnter(genreField);
+		
 		movieTableDataProvider.addDataDisplay(movietable.getTable());
+	    AsyncHandler columnSortHandler = new AsyncHandler(movietable.getTable());
+	    movietable.getTable().addColumnSortHandler(columnSortHandler);
 
 		WorldMap worldMap = new WorldMap();
 		map.add(worldMap);
 
 		RootPanel.get().add(vPanel);
+		yearUP.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				if(currentYear==endYear){
+					currentYear=startYear;	
+				}
+				else{
+					currentYear++;
+				}
+				dropBox.setSelectedIndex(currentYear - startYear);
+			}
+		});
+
+		yearDOWN.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				if(currentYear==startYear){
+					currentYear=endYear;
+				}
+				else{
+					currentYear--;
+				}
+				dropBox.setSelectedIndex(currentYear - startYear);	
+			}
+		});
+
 
 		exportButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				String exportUrl = Window.Location.createUrlBuilder()
-					.setPath("exportcsv")
-					.setParameter("name", currentQuery.getName())
-					.setParameter("year", currentQuery.getYear())
-					.setParameter("country", currentQuery.getCountry())
-					.setParameter("language", currentQuery.getLanguage())
-					.setParameter("genre", currentQuery.getGenre())
-					.buildString();
+				String exportUrl = Window.Location.createUrlBuilder().setPath("exportcsv")
+						.setParameter("name", currentQuery.getName()).setParameter("year", currentQuery.getYear())
+						.setParameter("country", currentQuery.getCountry())
+						.setParameter("language", currentQuery.getLanguage())
+//						.setParameter("duration", currentQuery.getLength())
+						.setParameter("genre", currentQuery.getGenre()).buildString();
+				
 				Window.Location.replace(exportUrl);
 			}
 		});
@@ -195,6 +253,10 @@ public class TestDB implements EntryPoint {
 	private void updateMovies(int start, int length) {
 		currentQuery.setOffset(start);
 		currentQuery.setLimit(length);
+		ColumnSortInfo columnSortInfo = movietable.getTable().getColumnSortList().get(0);
+		SortColumn sortColumn = SortColumn.valueOf(columnSortInfo.getColumn().getDataStoreName());
+		currentQuery.setAscending(columnSortInfo.isAscending());
+		currentQuery.setSortColumn(sortColumn);
 		movieService.getMoviesFromServer(currentQuery,
 				new AsyncCallback<MovieQueryResult>() {
 					public void onFailure(Throwable caught) {
