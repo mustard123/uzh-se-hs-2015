@@ -47,13 +47,64 @@ h1 {
 #closeButton {
   margin: 15px 6px 6px;ß
 }
+.btn_export{
+	
+    
+    top:2px
+ 
+    border:3px solid #73AD21;
+    padding: 10px;
+	
+}
+
+.rightTop {
+    position: absolute;
+    right: 10px;
+    top:2px
+ 
+    border:3px solid #73AD21;
+    padding: 10px;
+}
 
 .flowPanel_inline
 {
     display:inline;
     margin: 0px 0x 40px;
 }
+.flowPanel_inline_right
+{
+	position: relative;
+	
+    display:inline;
+    margin: 0px 0x 40px;
+    margin-left:25%;
+    margin-right:25%;
+   
+}
+.mapOptionsPanel
+{
+	border-style: outset ;
+    border-width: medium;
+    margin: auto;
+    
+    position: relative;
+    
+   	
+   
+   
+}
+.mapOptionsPanelContent
+{
+	position: relative;
+	margin: auto;
+  
+}
+.upperPanel
+{
 
+	margin: auto;
+  
+}
 
 
 

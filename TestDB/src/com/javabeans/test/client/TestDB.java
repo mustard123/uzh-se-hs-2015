@@ -8,12 +8,14 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.http.client.UrlBuilder;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
 import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -38,6 +40,8 @@ public class TestDB implements EntryPoint {
 	private int currentYear = 2015;
 	private int startYear = 1888;
 	private int endYear = 2015;
+	
+	private boolean isInMapMode = false;
 
 	private final MovieServiceAsync movieService = GWT.create(MovieService.class);
 
@@ -59,7 +63,7 @@ public class TestDB implements EntryPoint {
 	private HorizontalPanel country = new HorizontalPanel();
 	private HorizontalPanel genre = new HorizontalPanel();
 	private HorizontalPanel search = new HorizontalPanel();
-	private HorizontalPanel export = new HorizontalPanel();
+	private HorizontalPanel upperPanel=new HorizontalPanel();
 
 	private TextBox nameField = new TextBox();
 	private TextBox yearField = new TextBox();
@@ -68,6 +72,17 @@ public class TestDB implements EntryPoint {
 	private TextBox genreField = new TextBox();
 	private Button searchButton = new Button("Search");
 	private Button exportButton = new Button("Export");
+	private Button updateMapButton =new Button("Update Map");
+	
+	private WorldMap worldMap;
+	private CheckBox toggleUSA=new CheckBox();
+	private Label toggleUSAlbl=new Label("Toggle USA");
+	private HorizontalPanel mapOptionsPanel=new HorizontalPanel();
+	private Label totalMoviesFound = new Label();
+	private Label totalMoviesVisualized = new Label();
+	private VerticalPanel mapInfo=new VerticalPanel();
+	private HorizontalPanel toggleUSContainer=new HorizontalPanel();
+	
 
 	private MovieCellTable movietable = new MovieCellTable();
 	private MovieQuery currentQuery = new MovieQuery();
@@ -101,6 +116,8 @@ public class TestDB implements EntryPoint {
 
 		// Search Menu
 		searchMenu.setWidth("100%");
+		upperPanel.add(searchMenu);
+		
 		name.setStyleName("flowPanel_inline");
 		year.setStyleName("flowPanel_inline");
 		lang.setStyleName("flowPanel_inline");
@@ -108,7 +125,7 @@ public class TestDB implements EntryPoint {
 		genre.setStyleName("flowPanel_inline");
 		search.setStyleName("flowPanel_inline");
 		searchButton.setStyleName("flowPanel_inline");
-//		export.setStyleName("flowPanel_inline");
+		exportButton.setStyleName("rightTop");
 
 		name.add(titleLabel);
 		name.add(nameField);
@@ -128,7 +145,29 @@ public class TestDB implements EntryPoint {
 		searchMenu.add(country);
 		searchMenu.add(genre);
 		searchMenu.add(search);
-		searchMenu.add(exportButton);
+		//searchMenu.add(exportButton);
+		
+	
+		
+		
+		//ALL MAP UI ELEMENTS
+		toggleUSAlbl.addStyleName("mapOptionsPanelContent");
+		toggleUSA.addStyleName("mapOptionsPanelContent");
+		toggleUSContainer.add(toggleUSAlbl);
+		toggleUSContainer.add(toggleUSA);
+		toggleUSContainer.setStyleName("mapOptionsPanelContent");
+		
+		mapInfo.add(totalMoviesFound);
+		mapInfo.add(totalMoviesVisualized);
+		mapInfo.addStyleName("mapOptionsPanelContent");
+		
+		mapOptionsPanel.add(toggleUSContainer);
+		mapOptionsPanel.add(mapInfo);
+		
+		mapOptionsPanel.addStyleName("mapOptionsPanel");
+		mapOptionsPanel.setWidth("300px");
+		
+		//map.add(mapOptionsPanel);
 
 		scrollPanelTable.add(movietable);
 
@@ -137,7 +176,16 @@ public class TestDB implements EntryPoint {
 		hPanelSlider.add(yearDOWN);
 		hPanelSlider.add(dropBox);
 		hPanelSlider.add(yearUP);
+		//hPanelSlider.add(updateMapButton);
+		updateMapButton.setStyleName("rightTop");
 
+		
+		upperPanel.add(exportButton);
+		upperPanel.add(updateMapButton);
+		upperPanel.add(hPanelSlider);
+		upperPanel.add(mapOptionsPanel);
+		
+		
 		for (int i = startYear; i < endYear + 1; i++) {
 			String year = Integer.toString(i);
 
@@ -150,7 +198,13 @@ public class TestDB implements EntryPoint {
 		dropBox.setWidth("100px");
 		yearUP.setHeight("50px");
 		yearDOWN.setHeight("50px");
-		map.add(hPanelSlider);
+		//searchMenu.add(hPanelSlider);
+		
+		hPanelSlider.addStyleName("mapOptionsPanelContent");
+		hPanelSlider.setVisible(false);
+		updateMapButton.setVisible(false);
+		mapOptionsPanel.setVisible(false);
+		
 
 		tabPanel.setHeight("800px");
 		tabPanel.setAnimationDuration(1000);
@@ -159,8 +213,10 @@ public class TestDB implements EntryPoint {
 		tabPanel.add(scrollPanelTable, "table");
 		tabPanel.add(new ScrollPanel(map), "map");
 
-		vPanel.add(searchMenu);
+		//vPanel.add(searchMenu);
+		vPanel.add(upperPanel);
 		vPanel.add(tabPanel);
+		vPanel.setWidth("100%");
 		// vPanel.add(mapSliderBarSimpleHorizontal);
 
 		// tabPanel.addSelectionHandler(new SelectionHandler<Integer>() {
@@ -197,9 +253,16 @@ public class TestDB implements EntryPoint {
 	    AsyncHandler columnSortHandler = new AsyncHandler(movietable.getTable());
 	    movietable.getTable().addColumnSortHandler(columnSortHandler);
 
-		WorldMap worldMap = new WorldMap();
+	    
+	    
+	    //Assign worldMap Attributes
+		worldMap = new WorldMap(700,1200,currentQuery,movieService);
 		map.add(worldMap);
-
+		worldMap.setExcludeUS(toggleUSA);
+		worldMap.setTotalMoviesFound(totalMoviesFound);
+		worldMap.setTotalMoviesVisualized(totalMoviesVisualized);
+		//map.add(updateMapButton);
+		
 		RootPanel.get().add(vPanel);
 		yearUP.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -210,6 +273,8 @@ public class TestDB implements EntryPoint {
 					currentYear++;
 				}
 				dropBox.setSelectedIndex(currentYear - startYear);
+				worldMap.getCurrentQuery().setYear(Integer.toString(currentYear));
+				worldMap.UpdateWorldMap();
 			}
 		});
 
@@ -222,9 +287,22 @@ public class TestDB implements EntryPoint {
 					currentYear--;
 				}
 				dropBox.setSelectedIndex(currentYear - startYear);	
+				worldMap.getCurrentQuery().setYear(Integer.toString(currentYear));
+				worldMap.UpdateWorldMap();
 			}
 		});
 
+		
+		updateMapButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				worldMap.getCurrentQuery().setYear(yearField.getText().toString());
+				worldMap.getCurrentQuery().setName("");
+				worldMap.getCurrentQuery().setCountry("");
+				worldMap.getCurrentQuery().setLanguage("");
+				worldMap.getCurrentQuery().setGenre("");
+				worldMap.UpdateWorldMap();
+			}
+		});
 
 		exportButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -238,6 +316,21 @@ public class TestDB implements EntryPoint {
 				Window.Location.replace(exportUrl);
 			}
 		});
+		tabPanel.addSelectionHandler(new SelectionHandler<Integer>(){
+			  public void onSelection(SelectionEvent<Integer> event){
+			   int tabId = event.getSelectedItem();
+			   if(tabId==0)
+			   {
+				   isInMapMode=false;
+				   toggleMapMode(); 
+			   }
+			   else
+			   {
+				   isInMapMode=true;
+				   toggleMapMode();
+			   }
+			 }
+			});
 
 	}
 
@@ -283,9 +376,58 @@ public class TestDB implements EntryPoint {
 		filter.addKeyDownHandler(new KeyDownHandler() {
 			public void onKeyDown(KeyDownEvent event) {
 				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-					searchMovies();
+					if(!isInMapMode){
+						searchMovies();
+						currentYear=Integer.parseInt(yearField.getText());
+						
+					
+					}
+					else{
+						currentYear=Integer.parseInt(yearField.getText());
+						worldMap.getCurrentQuery().setYear(yearField.getText());
+						worldMap.getCurrentQuery().setName("");
+						
+						worldMap.getCurrentQuery().setCountry("");
+						worldMap.getCurrentQuery().setLanguage("");
+						worldMap.getCurrentQuery().setGenre("");
+						worldMap.UpdateWorldMap();
+						System.out.println(Integer.parseInt(yearField.getText()));
+					}
 				}
 			}
 		});
+	}
+	
+	
+
+	
+	private void toggleMapMode()
+	{
+		if(isInMapMode)
+		{
+			mapOptionsPanel.setVisible(true);
+			hPanelSlider.setVisible(true);
+			name.setVisible(false);
+			lang.setVisible(false);
+			country.setVisible(false);
+			genre.setVisible(false);
+			search.setVisible(false);
+			updateMapButton.setVisible(true);
+			if(yearField.getText()!=""){
+				worldMap.getCurrentQuery().setYear(yearField.getText());
+				worldMap.UpdateWorldMap();
+			}
+		}
+		else
+		{
+			mapOptionsPanel.setVisible(false);
+			hPanelSlider.setVisible(false);
+			name.setVisible(true);
+			lang.setVisible(true);
+			country.setVisible(true);
+			genre.setVisible(true);
+			search.setVisible(true);
+			updateMapButton.setVisible(false);
+		}
 	}
 }

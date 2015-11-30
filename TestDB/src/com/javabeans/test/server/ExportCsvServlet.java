@@ -14,6 +14,7 @@ import com.javabeans.test.server.bla.Database;
 import com.javabeans.test.server.bla.DatabaseFactory;
 import com.javabeans.test.shared.Movie;
 import com.javabeans.test.shared.MovieQuery;
+import com.javabeans.test.shared.SortColumn;
 
 public class ExportCsvServlet extends HttpServlet {
 
@@ -33,6 +34,8 @@ public class ExportCsvServlet extends HttpServlet {
 		query.setCountry(request.getParameter("country"));
 		query.setLanguage(request.getParameter("language"));
 		query.setGenre(request.getParameter("genre"));
+		query.setAscending(true);
+		query.setSortColumn(SortColumn.TITLE);
 
 		List<Movie> exportList = database.query(query).getMovies();
 
