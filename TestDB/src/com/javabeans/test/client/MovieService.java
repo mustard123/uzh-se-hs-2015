@@ -2,6 +2,9 @@ package com.javabeans.test.client;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.javabeans.test.shared.CountryCounter;
+import com.javabeans.test.shared.MapQuery;
+import com.javabeans.test.shared.MapQueryResult;
 import com.javabeans.test.shared.MovieQuery;
 import com.javabeans.test.shared.MovieQueryResult;
 
@@ -20,6 +23,13 @@ public interface MovieService extends RemoteService {
 	 */
 	MovieQueryResult getMoviesFromServer(MovieQuery query);
 
+	/**
+	 * Get the movie data for the map view
+	 * @param query the query that contains the search criteria for the movies
+	 * @return the list of {@link CountryCounter}s
+	 */
+	MapQueryResult getMapDataFromServer(MapQuery query);
+	
 	// add methods here to get data from the server (e.g., all available
 	// languages)
 	// and adapt MovieServiceAsync and MovieServiceImpl

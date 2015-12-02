@@ -7,7 +7,7 @@ public class DatabaseFactory {
 	// .getContextClassLoader().getResourceAsStream("movies_80000.tsv")));
 
 	private static Database instance = new FileBasedDatabase(new SerializedFileDataProvider(Thread.currentThread()
-			.getContextClassLoader().getResourceAsStream("movies_80000.serialized")));
+			.getContextClassLoader().getResourceAsStream("movies.serialized")));
 
 	/**
 	 * Returns the database instance.

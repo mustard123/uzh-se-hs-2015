@@ -16,16 +16,22 @@ public enum SortColumn {
 	RELEASE_DATE(new AlphanumComparator3()),
 	RUNTIME(new AlphanumComparator5()),
 	TITLE(new Comparator<Movie>() {
-		public int compare(Movie o1, Movie o2) {
-			if (o1 == o2) {
+		public int compare(Movie movie1, Movie movie2) {
+			if (movie1 == movie2) {
 				return 0;
 			}
 			
-			if (o1 != null) {
-				return (o2 != null) ? o1.getTitle()
-						.compareTo(o2.getTitle()) : 1;
+			if(movie1.getTitle() == null) {
+				if(movie2.getTitle() == null) {
+					return 0;
+				}
+				return -1;
 			}
-			return -1;
+			if(movie2.getTitle() == null) {
+				return 1;
+			}
+			
+			return movie1.getTitle().compareTo(movie2.getTitle());
 		}
 	}),
 	WIKI_MOVIE_ID(new WikiMovieIdComparator());

@@ -1,38 +1,32 @@
 package com.javabeans.test.shared;
 
-import java.util.ArrayList;
-import com.google.gwt.visualization.client.*;
-import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
-import com.google.gwt.visualization.client.visualizations.corechart.Options;
-import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-import java.util.List;
-
-public class CountryCounter {
+public class CountryCounter implements IsSerializable {
 	private String countryName;
-	
+
 	private int numberOfMovies;
+
+	public CountryCounter() {}
 	
-	
-	public  CountryCounter(String countryName){
-		this.countryName=countryName;
+	public CountryCounter(String countryName) {
+		this.countryName = countryName;
 	}
-	
-	public String getCountryName(){
+
+	public String getCountryName() {
 		return countryName;
 	}
-	
-	public int getNumberOfMovies(){
+
+	public int getNumberOfMovies() {
 		return numberOfMovies;
 	}
-	
-	public  void increaseNumberOfMovies(){
+
+	public void increaseNumberOfMovies() {
 		numberOfMovies++;
 	}
-	
-	public void reset(){
-		numberOfMovies=0;
+
+	public void reset() {
+		numberOfMovies = 0;
 	}
-	
 
 }

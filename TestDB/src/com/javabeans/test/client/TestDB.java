@@ -199,6 +199,13 @@ public class TestDB implements EntryPoint {
 		yearUP.setHeight("50px");
 		yearDOWN.setHeight("50px");
 		//searchMenu.add(hPanelSlider);
+		dropBox.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){
+				currentYear=dropBox.getSelectedIndex()+startYear;
+				worldMap.getCurrentQuery().setYear(Integer.toString(currentYear));
+				worldMap.UpdateWorldMap();
+			}
+		});
 		
 		hPanelSlider.addStyleName("mapOptionsPanelContent");
 		hPanelSlider.setVisible(false);
@@ -256,9 +263,8 @@ public class TestDB implements EntryPoint {
 	    
 	    
 	    //Assign worldMap Attributes
-		worldMap = new WorldMap(700,1200,currentQuery,movieService);
+		worldMap = new WorldMap(700,1200,movieService);
 		map.add(worldMap);
-		worldMap.setExcludeUS(toggleUSA);
 		worldMap.setTotalMoviesFound(totalMoviesFound);
 		worldMap.setTotalMoviesVisualized(totalMoviesVisualized);
 		//map.add(updateMapButton);
@@ -296,10 +302,7 @@ public class TestDB implements EntryPoint {
 		updateMapButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				worldMap.getCurrentQuery().setYear(yearField.getText().toString());
-				worldMap.getCurrentQuery().setName("");
-				worldMap.getCurrentQuery().setCountry("");
-				worldMap.getCurrentQuery().setLanguage("");
-				worldMap.getCurrentQuery().setGenre("");
+				worldMap.getCurrentQuery().setExcludeUs(toggleUSA.getValue());
 				worldMap.UpdateWorldMap();
 			}
 		});
@@ -378,21 +381,17 @@ public class TestDB implements EntryPoint {
 				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
 					if(!isInMapMode){
 						searchMovies();
-						currentYear=Integer.parseInt(yearField.getText());
 						
 					
 					}
 					else{
-						currentYear=Integer.parseInt(yearField.getText());
 						worldMap.getCurrentQuery().setYear(yearField.getText());
-						worldMap.getCurrentQuery().setName("");
-						
-						worldMap.getCurrentQuery().setCountry("");
-						worldMap.getCurrentQuery().setLanguage("");
-						worldMap.getCurrentQuery().setGenre("");
 						worldMap.UpdateWorldMap();
-						System.out.println(Integer.parseInt(yearField.getText()));
 					}
+					currentYear=Integer.parseInt(yearField.getText());
+					dropBox.setSelectedIndex(currentYear - startYear);
+					System.out.println("Selected index: " + dropBox.getSelectedIndex());
+					System.out.println("Current year: " + currentYear);
 				}
 			}
 		});

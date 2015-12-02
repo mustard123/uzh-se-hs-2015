@@ -1,6 +1,5 @@
 package com.javabeans.test.server.bla;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -9,6 +8,7 @@ import com.google.gwt.thirdparty.guava.common.collect.FluentIterable;
 import com.javabeans.test.shared.Movie;
 import com.javabeans.test.shared.MovieQuery;
 import com.javabeans.test.shared.MovieQueryResult;
+import com.javabeans.test.shared.SortColumn;
 
 
 public class FileBasedDatabase implements Database {
@@ -32,6 +32,7 @@ public class FileBasedDatabase implements Database {
 		LOGGER.info("Executing query...");
 		parseMovies();
 		LOGGER.info("Movies parsed");
+		SortColumn sortColumn = query.getSortColumn() != null ? query.getSortColumn() : SortColumn.TITLE;
 		
 		List<Movie> filteredMovies = FluentIterable.from(movieListCache)
 				.filter(namePredicate(query.getName()))
@@ -39,7 +40,7 @@ public class FileBasedDatabase implements Database {
 				.filter(countryPredicate(query.getCountry()))
 				.filter(languagePredicate(query.getLanguage()))
 				.filter(genrePredicate(query.getGenre()))
-				.toSortedList(query.getSortColumn().getComparator(query.isAscending()));
+				.toSortedList(sortColumn.getComparator(query.isAscending()));
 		
 		int limit = query.getLimit() == null ? Integer.MAX_VALUE : query.getLimit();
 		ArrayList<Movie> movieListSlice = new ArrayList<>(FluentIterable.from(filteredMovies)

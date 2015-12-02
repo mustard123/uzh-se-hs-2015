@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.javabeans.test.shared.Movie;
@@ -23,7 +22,7 @@ public class SerializedFileDataProvider implements FileDataProvider {
 	@Override
 	public List<Movie> getMovies() {
 		List<Movie> movies = new ArrayList<>();
-		LOGGER.log(Level.INFO, "Reading serialized movies.");
+		LOGGER.info("Reading serialized movies.");
 		try (ObjectInputStream objectStream = new ObjectInputStream(serializedMoviesFile)) {
 			try {
 				while (true) {
@@ -34,7 +33,7 @@ public class SerializedFileDataProvider implements FileDataProvider {
 			} catch (EOFException e) {
 				// ignore
 			}
-			LOGGER.log(Level.INFO, "Read " + movies.size() + " movies.");
+			LOGGER.info("Read " + movies.size() + " movies.");
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}

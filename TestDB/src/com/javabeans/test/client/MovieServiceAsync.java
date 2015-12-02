@@ -1,9 +1,8 @@
 package com.javabeans.test.client;
 
-import java.util.List;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.javabeans.test.shared.Movie;
+import com.javabeans.test.shared.MapQuery;
+import com.javabeans.test.shared.MapQueryResult;
 import com.javabeans.test.shared.MovieQuery;
 import com.javabeans.test.shared.MovieQueryResult;
 
@@ -12,4 +11,6 @@ import com.javabeans.test.shared.MovieQueryResult;
  */
 public interface MovieServiceAsync {
 	void getMoviesFromServer(MovieQuery query, AsyncCallback<MovieQueryResult> callback);
+
+	void getMapDataFromServer(MapQuery query, AsyncCallback<MapQueryResult> callback);
 }
