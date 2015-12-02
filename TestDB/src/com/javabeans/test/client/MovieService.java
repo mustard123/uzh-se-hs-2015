@@ -7,6 +7,7 @@ import com.javabeans.test.shared.MapQuery;
 import com.javabeans.test.shared.MapQueryResult;
 import com.javabeans.test.shared.MovieQuery;
 import com.javabeans.test.shared.MovieQueryResult;
+import com.javabeans.test.shared.SearchFormData;
 
 /**
  * The client-side stub for the RPC service.
@@ -29,6 +30,13 @@ public interface MovieService extends RemoteService {
 	 * @return the list of {@link CountryCounter}s
 	 */
 	MapQueryResult getMapDataFromServer(MapQuery query);
+	
+	/**
+	 * Get languages, genres, countries and years for the listboxes.
+	 * 
+	 * @return a container with languages, genres, countries and years for the listboxes.
+	 */
+	SearchFormData getSearchFormData();
 	
 	// add methods here to get data from the server (e.g., all available
 	// languages)

@@ -4,16 +4,16 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import com.javabeans.test.shared.comparator.AlphanumComparator2;
-import com.javabeans.test.shared.comparator.AlphanumComparator3;
 import com.javabeans.test.shared.comparator.AlphanumComparator4;
 import com.javabeans.test.shared.comparator.AlphanumComparator5;
 import com.javabeans.test.shared.comparator.WikiMovieIdComparator;
+import com.javabeans.test.shared.comparator.YearComparator;
 
 public enum SortColumn {
 
 	BOX_OFFICE_REVENUE(new AlphanumComparator4()),
 	FREEBASE_MOVIE_ID(new AlphanumComparator2()),
-	RELEASE_DATE(new AlphanumComparator3()),
+	RELEASE_DATE(new YearComparator()),
 	RUNTIME(new AlphanumComparator5()),
 	TITLE(new Comparator<Movie>() {
 		public int compare(Movie movie1, Movie movie2) {

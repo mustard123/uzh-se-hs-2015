@@ -40,7 +40,10 @@ public class TsvParser {
 		Long wikiMovieID = Long.valueOf(columns.get(0));
 		String freebaseMovieID = columns.get(1);
 		String title = columns.get(2);
-		String year = columns.get(3);
+		Integer year = columns.get(3).isEmpty() ? null : Integer.valueOf(columns.get(3).substring(0,4));
+		if(year != null && year < 1888) {
+			System.out.println("Errör: year string '" + columns.get(3) + "' is " + year + " (wiki id: " + wikiMovieID + ")");
+		}
 		String boxOfficeRevenue = columns.get(4);
 		String length = columns.get(5);
 		List<String> languages = parseList(columns.get(6));

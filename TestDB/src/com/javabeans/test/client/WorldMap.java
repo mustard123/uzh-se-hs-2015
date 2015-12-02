@@ -102,11 +102,11 @@ public class WorldMap extends VerticalPanel {
 
 	// Query to the Server
 	private void updateMovieList() {
-		if (currentQuery.getYear() == null || currentQuery.getYear().isEmpty()) {
+		if (currentQuery.getYear() == null) {
 			if (isInitialized) {
 				Window.alert("You have not chosen any criteria! By default, only movies of the current year will be shown");
 			}
-			currentQuery.setYear("2015");
+			currentQuery.setYear(2015);
 		}
 		
 		movieService.getMapDataFromServer(currentQuery, new AsyncCallback<MapQueryResult>() {

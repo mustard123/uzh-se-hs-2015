@@ -1,5 +1,7 @@
 package com.javabeans.test.client;
 
+import java.util.logging.Logger;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -30,6 +32,7 @@ import com.google.gwt.view.client.HasData;
 import com.javabeans.test.shared.Movie;
 import com.javabeans.test.shared.MovieQuery;
 import com.javabeans.test.shared.MovieQueryResult;
+import com.javabeans.test.shared.SearchFormData;
 import com.javabeans.test.shared.SortColumn;
 
 /**
@@ -37,6 +40,8 @@ import com.javabeans.test.shared.SortColumn;
  */
 public class TestDB implements EntryPoint {
 
+	private final Logger LOGGER = Logger.getLogger(TestDB.class.getSimpleName());
+	
 	private int currentYear = 2015;
 	private int startYear = 1888;
 	private int endYear = 2015;
@@ -66,10 +71,10 @@ public class TestDB implements EntryPoint {
 	private HorizontalPanel upperPanel=new HorizontalPanel();
 
 	private TextBox nameField = new TextBox();
-	private TextBox yearField = new TextBox();
-	private TextBox countryField = new TextBox();
-	private TextBox languageField = new TextBox();
-	private TextBox genreField = new TextBox();
+	private ListBox yearField = new ListBox();
+	private ListBox countryField = new ListBox();
+	private ListBox languageField = new ListBox();
+	private ListBox genreField = new ListBox();
 	private Button searchButton = new Button("Search");
 	private Button exportButton = new Button("Export");
 	private Button updateMapButton =new Button("Update Map");
@@ -95,10 +100,6 @@ public class TestDB implements EntryPoint {
 	};
 
 	private Label titleLabel = new Label("Title");
-	private Label yearLabel = new Label("Year (e.g. '1990')");
-	private Label CountryLabel = new Label("Country");
-	private Label LanguageLabel = new Label("Language");
-	private Label GenreLabel = new Label("Genre");
 
 	private TabLayoutPanel tabPanel = new TabLayoutPanel(2.5, Unit.EM);
 
@@ -129,13 +130,9 @@ public class TestDB implements EntryPoint {
 
 		name.add(titleLabel);
 		name.add(nameField);
-		year.add(yearLabel);
 		year.add(yearField);
-		lang.add(LanguageLabel);
 		lang.add(languageField);
-		country.add(CountryLabel);
 		country.add(countryField);
-		genre.add(GenreLabel);
 		genre.add(genreField);
 		search.add(searchButton);
 
@@ -202,7 +199,7 @@ public class TestDB implements EntryPoint {
 		dropBox.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
 				currentYear=dropBox.getSelectedIndex()+startYear;
-				worldMap.getCurrentQuery().setYear(Integer.toString(currentYear));
+				worldMap.getCurrentQuery().setYear(currentYear);
 				worldMap.UpdateWorldMap();
 			}
 		});
@@ -251,10 +248,6 @@ public class TestDB implements EntryPoint {
 			}
 		});
 		searchAtEnter(nameField);
-		searchAtEnter(yearField);
-		searchAtEnter(countryField);
-		searchAtEnter(languageField);
-		searchAtEnter(genreField);
 		
 		movieTableDataProvider.addDataDisplay(movietable.getTable());
 	    AsyncHandler columnSortHandler = new AsyncHandler(movietable.getTable());
@@ -279,7 +272,7 @@ public class TestDB implements EntryPoint {
 					currentYear++;
 				}
 				dropBox.setSelectedIndex(currentYear - startYear);
-				worldMap.getCurrentQuery().setYear(Integer.toString(currentYear));
+				worldMap.getCurrentQuery().setYear(currentYear);
 				worldMap.UpdateWorldMap();
 			}
 		});
@@ -293,7 +286,7 @@ public class TestDB implements EntryPoint {
 					currentYear--;
 				}
 				dropBox.setSelectedIndex(currentYear - startYear);	
-				worldMap.getCurrentQuery().setYear(Integer.toString(currentYear));
+				worldMap.getCurrentQuery().setYear(currentYear);
 				worldMap.UpdateWorldMap();
 			}
 		});
@@ -301,7 +294,7 @@ public class TestDB implements EntryPoint {
 		
 		updateMapButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				worldMap.getCurrentQuery().setYear(yearField.getText().toString());
+				worldMap.getCurrentQuery().setYear(getYearFromField());
 				worldMap.getCurrentQuery().setExcludeUs(toggleUSA.getValue());
 				worldMap.UpdateWorldMap();
 			}
@@ -310,7 +303,8 @@ public class TestDB implements EntryPoint {
 		exportButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				String exportUrl = Window.Location.createUrlBuilder().setPath("exportcsv")
-						.setParameter("name", currentQuery.getName()).setParameter("year", currentQuery.getYear())
+						.setParameter("name", currentQuery.getName())
+						.setParameter("year", currentQuery.getYear()  == null ? null : currentQuery.getYear().toString())
 						.setParameter("country", currentQuery.getCountry())
 						.setParameter("language", currentQuery.getLanguage())
 //						.setParameter("duration", currentQuery.getLength())
@@ -335,14 +329,44 @@ public class TestDB implements EntryPoint {
 			 }
 			});
 
+		yearField.addItem("Year", "");
+		countryField.addItem("Country", "");
+		genreField.addItem("Genre", "");
+		languageField.addItem("Language", "");
+		
+		// get data for the list boxes (i.e., countries, languages, etc.) from the server
+		movieService.getSearchFormData(new AsyncCallback<SearchFormData>() {
+				public void onFailure(Throwable caught) {
+					System.out.println("Failed: " + caught.toString());
+				}
+
+				public void onSuccess(SearchFormData result) {
+					// add countries to the country list box
+					for(String country : result.getCountries()) {
+						countryField.addItem(country);
+					}
+					// add genres to the genre list box
+					for(String genre : result.getGenres()) {
+						genreField.addItem(genre);
+					}
+					// add languages to the language list box
+					for(String language : result.getLanguages()) {
+						languageField.addItem(language);
+					}
+					// add years to the year list box
+					for (Integer year : result.getYears()) {
+						yearField.addItem(year.toString());
+					}
+				}
+			});
 	}
 
 	private void searchMovies() {
 		currentQuery.setName(nameField.getText());
-		currentQuery.setYear(yearField.getText());
-		currentQuery.setCountry(countryField.getText());
-		currentQuery.setLanguage(languageField.getText());
-		currentQuery.setGenre(genreField.getText());
+		currentQuery.setYear(getYearFromField());
+		currentQuery.setCountry(countryField.getValue(countryField.getSelectedIndex()));
+		currentQuery.setLanguage(languageField.getValue(languageField.getSelectedIndex()));
+		currentQuery.setGenre(genreField.getValue(genreField.getSelectedIndex()));
 		updateMovies(0, movietable.getTable().getVisibleRange().getLength());
 	}
 
@@ -353,6 +377,7 @@ public class TestDB implements EntryPoint {
 		SortColumn sortColumn = SortColumn.valueOf(columnSortInfo.getColumn().getDataStoreName());
 		currentQuery.setAscending(columnSortInfo.isAscending());
 		currentQuery.setSortColumn(sortColumn);
+		LOGGER.info("Sending query " + currentQuery);
 		movieService.getMoviesFromServer(currentQuery,
 				new AsyncCallback<MovieQueryResult>() {
 					public void onFailure(Throwable caught) {
@@ -381,15 +406,13 @@ public class TestDB implements EntryPoint {
 				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
 					if(!isInMapMode){
 						searchMovies();
-						
-					
 					}
 					else{
-						worldMap.getCurrentQuery().setYear(yearField.getText());
+						worldMap.getCurrentQuery().setYear(getYearFromField());
 						worldMap.UpdateWorldMap();
 					}
-					currentYear=Integer.parseInt(yearField.getText());
-					dropBox.setSelectedIndex(currentYear - startYear);
+//					currentYear=Integer.parseInt(yearField.getText());
+//					dropBox.setSelectedIndex(currentYear - startYear);
 					System.out.println("Selected index: " + dropBox.getSelectedIndex());
 					System.out.println("Current year: " + currentYear);
 				}
@@ -407,13 +430,14 @@ public class TestDB implements EntryPoint {
 			mapOptionsPanel.setVisible(true);
 			hPanelSlider.setVisible(true);
 			name.setVisible(false);
+			year.setVisible(false);
 			lang.setVisible(false);
 			country.setVisible(false);
 			genre.setVisible(false);
 			search.setVisible(false);
 			updateMapButton.setVisible(true);
-			if(yearField.getText()!=""){
-				worldMap.getCurrentQuery().setYear(yearField.getText());
+			if(getYearFromField() != null){
+				worldMap.getCurrentQuery().setYear(getYearFromField());
 				worldMap.UpdateWorldMap();
 			}
 		}
@@ -422,11 +446,22 @@ public class TestDB implements EntryPoint {
 			mapOptionsPanel.setVisible(false);
 			hPanelSlider.setVisible(false);
 			name.setVisible(true);
+			year.setVisible(true);
 			lang.setVisible(true);
 			country.setVisible(true);
 			genre.setVisible(true);
 			search.setVisible(true);
 			updateMapButton.setVisible(false);
+		}
+	}
+	
+	private Integer getYearFromField() {
+		try {
+			System.out.println("Year is " + Integer.valueOf(yearField.getValue(yearField.getSelectedIndex())));
+			return Integer.valueOf(yearField.getValue(yearField.getSelectedIndex()));
+		} catch(NumberFormatException e) {
+			System.out.println("Year is null");
+			return null;
 		}
 	}
 }

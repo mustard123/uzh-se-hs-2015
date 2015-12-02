@@ -18,7 +18,7 @@ public class Movie implements IsSerializable, Serializable {
 	private List<String> genres;
 
 	private String length;
-	private String year;
+	private Integer year;
 	private String boxOfficeRevenue;
 	private String information;
 
@@ -29,7 +29,7 @@ public class Movie implements IsSerializable, Serializable {
 		this.setInformation(information);
 	}
 
-	public Movie(Long wikiMovieID, String freebaseMovieID, String title, String year, String boxOfficeRevenue,
+	public Movie(Long wikiMovieID, String freebaseMovieID, String title, Integer year, String boxOfficeRevenue,
 			String length, List<String> languages, List<String> countries, List<String> genres) {
 
 		this.wikiMovieID = wikiMovieID;
@@ -99,11 +99,11 @@ public class Movie implements IsSerializable, Serializable {
 		this.length = length;
 	}
 
-	public String getYear() {
+	public Integer getYear() {
 		return year;
 	}
 
-	public void setYear(String year) {
+	public void setYear(Integer year) {
 		this.year = year;
 	}
 

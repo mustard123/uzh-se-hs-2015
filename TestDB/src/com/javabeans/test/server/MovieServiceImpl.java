@@ -1,7 +1,10 @@
 package com.javabeans.test.server;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.javabeans.test.client.MovieService;
@@ -13,6 +16,7 @@ import com.javabeans.test.shared.MapQueryResult;
 import com.javabeans.test.shared.Movie;
 import com.javabeans.test.shared.MovieQuery;
 import com.javabeans.test.shared.MovieQueryResult;
+import com.javabeans.test.shared.SearchFormData;
 
 /**
  * The server-side implementation of the RPC service.
@@ -25,6 +29,36 @@ public class MovieServiceImpl extends RemoteServiceServlet implements MovieServi
 
 	public MovieQueryResult getMoviesFromServer(MovieQuery query) {
 		return database.query(query);
+	}
+	
+	@Override
+	public SearchFormData getSearchFormData() {
+		// create lists of all countries, genres, languages and years in the database
+		Set<String> countries = new HashSet<>();
+		Set<String> genres = new HashSet<>();
+		Set<String> languages = new HashSet<>();
+		Set<Integer> years = new HashSet<>();
+		// iterate over all movies and extract countries, genres, languages and year
+		for(Movie movie : database.query(new MovieQuery()).getMovies()) {
+			countries.addAll(movie.getCountries());
+			genres.addAll(movie.getGenres());
+			languages.addAll(movie.getLanguages());
+			if(movie.getYear() != null) {
+				years.add(movie.getYear());
+			}
+		}
+		SearchFormData data = new SearchFormData();
+		// add data to the response object
+		data.getCountries().addAll(countries);
+		data.getGenres().addAll(genres);
+		data.getLanguages().addAll(languages);
+		data.getYears().addAll(years);
+		// sort values so that they appear sorted in the UI
+		Collections.sort(data.getCountries());
+		Collections.sort(data.getGenres());
+		Collections.sort(data.getLanguages());
+		Collections.sort(data.getYears());
+		return data;
 	}
 
 	@Override

@@ -4,14 +4,14 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class MapQuery implements IsSerializable{
 	
-	private String year;
+	private Integer year;
 	private boolean excludeUs;
 	
-	public String getYear() {
+	public Integer getYear() {
 		return year;
 	}
 
-	public void setYear(String year) {
+	public void setYear(Integer year) {
 		this.year = year;
 	}
 

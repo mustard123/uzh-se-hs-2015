@@ -41,7 +41,7 @@ public class MovieCellTable extends Composite {
 	TextColumn<Movie> releaseDateColumn = new TextColumn<Movie>() {
 		@Override
 		public String getValue(Movie object) {
-			return object.getYear();
+			return object.getYear() == null ? null : object.getYear().toString();
 		}
 	};
 

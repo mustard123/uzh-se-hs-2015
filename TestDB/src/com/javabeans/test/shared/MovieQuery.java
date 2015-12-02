@@ -11,7 +11,7 @@ public class MovieQuery implements IsSerializable {
 
 	private String name;
 	private Long wikiMovieId;
-	private String year;
+	private Integer year;
 	private String country;
 	private String language;
 	private String genre;
@@ -71,11 +71,11 @@ public class MovieQuery implements IsSerializable {
 		this.wikiMovieId = wikiMovieId;
 	}
 
-	public String getYear() {
+	public Integer getYear() {
 		return year;
 	}
 
-	public void setYear(String year) {
+	public void setYear(Integer year) {
 		this.year = year;
 	}
 
@@ -103,4 +103,19 @@ public class MovieQuery implements IsSerializable {
 		this.genre = genre;
 	}
 
+	@Override
+	public String toString() {
+		return new StringBuilder().append(this.getClass().getSimpleName()).append("{")
+			.append("name:").append(this.getName() == null ? "<null>" : this.getName())
+			.append(", language:").append(this.getLanguage()  == null ? "<null>" : this.getLanguage())
+			.append(", country:").append(this.getCountry()  == null ? "<null>" : this.getCountry())
+			.append(", genre:").append(this.getGenre()  == null ? "<null>" : this.getGenre())
+			.append(", wikiMovieId:").append(this.getWikiMovieId())
+			.append(", year:").append(this.getYear())
+			.append(", offset:").append(this.getOffset())
+			.append(", limit:").append(this.getLimit())
+			.append(", sortColumn:").append(this.getSortColumn())
+			.append("}")
+			.toString();
+	};
 }

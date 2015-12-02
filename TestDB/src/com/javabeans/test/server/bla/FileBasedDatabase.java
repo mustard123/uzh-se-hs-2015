@@ -29,14 +29,14 @@ public class FileBasedDatabase implements Database {
 	
 	@Override
 	public MovieQueryResult query(MovieQuery query) {
-		LOGGER.info("Executing query...");
+		LOGGER.info("Executing query: " + query);
 		parseMovies();
 		LOGGER.info("Movies parsed");
 		SortColumn sortColumn = query.getSortColumn() != null ? query.getSortColumn() : SortColumn.TITLE;
 		
 		List<Movie> filteredMovies = FluentIterable.from(movieListCache)
-				.filter(namePredicate(query.getName()))
 				.filter(yearPredicate(query.getYear()))
+				.filter(namePredicate(query.getName()))
 				.filter(countryPredicate(query.getCountry()))
 				.filter(languagePredicate(query.getLanguage()))
 				.filter(genrePredicate(query.getGenre()))
@@ -48,7 +48,7 @@ public class FileBasedDatabase implements Database {
 				.limit(limit)
 				.toList());
 		
-		LOGGER.info("Movies filtered");
+		LOGGER.info("Movies filtered. The number of matching movies is " + filteredMovies.size());
 		MovieQueryResult result = new MovieQueryResult();
 		result.setMovies(movieListSlice);
 		result.setTotalMovieCount(filteredMovies.size());
@@ -81,7 +81,7 @@ public class FileBasedDatabase implements Database {
 			}
 		};
 	}
-	private static Predicate<Movie> yearPredicate(final String year) {
+	private static Predicate<Movie> yearPredicate(final Integer year) {
 		return new Predicate<Movie>() {
 			@Override
 			public boolean apply(Movie movie) {
@@ -91,7 +91,8 @@ public class FileBasedDatabase implements Database {
 				if(movie.getYear() == null){
 					return year == null;
 				}
-				return movie.getYear().contains(year);
+				
+				return movie.getYear().equals(year);
 			}
 		};
 	}

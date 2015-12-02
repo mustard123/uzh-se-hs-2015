@@ -30,7 +30,11 @@ public class ExportCsvServlet extends HttpServlet {
 
 		MovieQuery query = new MovieQuery();
 		query.setName(request.getParameter("name"));
-		query.setYear(request.getParameter("year"));
+		try {
+			query.setYear(Integer.valueOf(request.getParameter("year")));
+		} catch(NumberFormatException e) {
+			// ignore
+		}
 		query.setCountry(request.getParameter("country"));
 		query.setLanguage(request.getParameter("language"));
 		query.setGenre(request.getParameter("genre"));

@@ -1,9 +1,8 @@
 package com.javabeans.test.server.bla;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,9 +11,26 @@ import org.junit.Test;
 import com.javabeans.test.shared.Movie;
 import com.javabeans.test.shared.MovieQuery;
 import com.javabeans.test.shared.MovieQueryResult;
+import com.javabeans.test.shared.SortColumn;
 
 public class FileBasedDatabaseTest {
 
+	@Test
+	public void testWithEmptyString() {
+		Database database = new FileBasedDatabase(new SerializedFileDataProvider(Thread.currentThread()
+				.getContextClassLoader().getResourceAsStream("movies.serialized")));
+		MovieQuery query = new MovieQuery();
+		query.setName("");
+		query.setSortColumn(SortColumn.TITLE);
+		query.setLanguage("");
+		query.setGenre("");
+		query.setCountry("");
+
+		MovieQueryResult result = database.query(query);
+		
+		assertNotEquals(0, result.getTotalMovieCount());
+	}
+	
 	@Test
 	public void testFilterByName() {
 		Movie movie1 = new Movie();
@@ -50,24 +66,24 @@ public class FileBasedDatabaseTest {
 	public void testFilterByYear() {
 		Movie movie1 = new Movie();
 		Movie movie2 = new Movie();
-		movie1.setYear("2002");
-		movie2.setYear("2001");
+		movie1.setYear(2002);
+		movie2.setYear(2001);
 
 		MovieQuery query = new MovieQuery();
-		query.setYear("2001");
+		query.setYear(2001);
 
 		MovieQueryResult result = new FileBasedDatabase(testDataProvider(movie1, movie2)).query(query);
 
 		assertEquals(1, result.getMovies().size());
-		assertEquals("2001", result.getMovies().get(0).getYear());
+		assertEquals(Integer.valueOf(2001), result.getMovies().get(0).getYear());
 	}
 
 	@Test
 	public void testFilterWithYear() {
 		Movie movie1 = new Movie();
 		Movie movie2 = new Movie();
-		movie1.setYear("2001");
-		movie2.setYear("2004");
+		movie1.setYear(2001);
+		movie2.setYear(2004);
 
 		MovieQuery query = new MovieQuery();
 		query.setName(null);
