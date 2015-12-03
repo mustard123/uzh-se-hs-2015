@@ -4,9 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import com.google.gwt.thirdparty.guava.common.base.Splitter;
 import com.javabeans.test.shared.Movie;
@@ -25,7 +27,7 @@ public class TsvParser {
 				inputStream))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
-				movies.add(this.parseMovie(line));
+				movies.add(this.parseMovie(convertFromEscapedUtf(line)));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -34,14 +36,21 @@ public class TsvParser {
 		return movies;
 	}
 	
+
+	private String convertFromEscapedUtf(String raw) throws IOException {
+		Properties p = new Properties();
+		p.load(new StringReader("key="+raw));
+		return p.getProperty("key");
+	}
+	
 	/**
 	 * 
-	 * @param line of in a TSV file.
+	 * @param line in a TSV file.
 	 * @return Movie object with wikiMovieID, freebaseMovieID, title, year,
 				boxOfficeRevenue, length, languages, countries, genres as attributes.
 	 */
 	private Movie parseMovie(String line) {
-
+		
 		List<String> columns = Splitter.on('\t').trimResults()
 				.splitToList(line);
 		Long wikiMovieID = Long.valueOf(columns.get(0));
@@ -60,7 +69,7 @@ public class TsvParser {
 		return new Movie(wikiMovieID, freebaseMovieID, title, year,
 				boxOfficeRevenue, length, languages, countries, genres);
 	}
-
+	
 	/**
 	 * Parse list with format "{"key1":"value1", "key2":"value2", ...}
 	 */

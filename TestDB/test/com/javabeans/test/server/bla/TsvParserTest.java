@@ -14,6 +14,7 @@ import com.javabeans.test.shared.Movie;
 
 public class TsvParserTest {
 	
+	
 	@Test
 	public void testParseWithValidInput() {
 		// Arrange -> Set up test
@@ -28,12 +29,22 @@ public class TsvParserTest {
 		assertEquals(Long.valueOf(975900L), movies.get(0).getWikiMovieID());
 		assertEquals("/m/03vyhn", movies.get(0).getFreebaseMovieID());
 		assertEquals("Ghosts of Mars", movies.get(0).getTitle());
-		assertEquals("2001-08-24", movies.get(0).getYear());
+		assertEquals(Integer.valueOf(2001), movies.get(0).getYear());
 		assertEquals("14", movies.get(0).getBoxOfficeRevenue());
 		assertEquals("98.0", movies.get(0).getLength());
 		assertEquals(Arrays.asList("English Language"), movies.get(0).getLanguages());
 		assertEquals(Arrays.asList("United States of America"), movies.get(0).getCountries());
 		assertEquals(Arrays.asList("Thriller"), movies.get(0).getGenres());
+	}
+	
+	@Test
+	public void testEscapeUtf() {
+		String input = "28382586	/m/0crffzd	Savage Play	1995		135.0	{\"/m/0dds9\": \"M\\u0101ori language\"}	{}	{}";
+		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+		
+		List<Movie> movies = new TsvParser().parse(inputStream);
+
+		assertEquals("M\u0101ori language", movies.get(0).getLanguages().get(0));
 	}
 
 	@Test
