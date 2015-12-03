@@ -22,13 +22,16 @@ public class Serializer {
 	
 	public static void main(String[] args) throws Exception {
 		List<Movie> allMovies = new ArrayList<>();
-
+		
+		// Parse all files in MOVIE_DIRECTORY
 		for(Path moviesFile : Files.newDirectoryStream(MOVIE_DIRECTORY)) {
 			try(FileInputStream input = new FileInputStream(moviesFile.toFile())) {
 				LOGGER.info("Parsing file " + moviesFile.getFileName());
 				allMovies.addAll(PARSER.parse(input));
 			}
 		}
+		
+		// Add all Movie objects to file
 		try(ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(OUTPUT_FILE.toFile()))) {
 			LOGGER.info("Writing output to file " + OUTPUT_FILE.getFileName());
 			for (Movie movie : allMovies) {

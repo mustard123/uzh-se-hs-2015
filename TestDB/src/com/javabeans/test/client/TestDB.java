@@ -115,7 +115,6 @@ public class TestDB implements EntryPoint {
 		System.out.println("Module starts loading... ");
 		vPanel.add(addPlaceholder);
 
-		// Search Menu
 		searchMenu.setWidth("100%");
 		upperPanel.add(searchMenu);
 		
@@ -142,10 +141,7 @@ public class TestDB implements EntryPoint {
 		searchMenu.add(country);
 		searchMenu.add(genre);
 		searchMenu.add(search);
-		//searchMenu.add(exportButton);
-		
-	
-		
+
 		
 		//ALL MAP UI ELEMENTS
 		toggleUSAlbl.addStyleName("mapOptionsPanelContent");
@@ -164,7 +160,6 @@ public class TestDB implements EntryPoint {
 		mapOptionsPanel.addStyleName("mapOptionsPanel");
 		mapOptionsPanel.setWidth("300px");
 		
-		//map.add(mapOptionsPanel);
 
 		scrollPanelTable.add(movietable);
 
@@ -260,7 +255,6 @@ public class TestDB implements EntryPoint {
 		map.add(worldMap);
 		worldMap.setTotalMoviesFound(totalMoviesFound);
 		worldMap.setTotalMoviesVisualized(totalMoviesVisualized);
-		//map.add(updateMapButton);
 		
 		RootPanel.get().add(vPanel);
 		yearUP.addClickHandler(new ClickHandler() {
@@ -421,7 +415,6 @@ public class TestDB implements EntryPoint {
 	}
 	
 	
-
 	
 	private void toggleMapMode()
 	{

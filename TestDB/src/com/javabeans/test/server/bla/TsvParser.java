@@ -13,6 +13,11 @@ import com.javabeans.test.shared.Movie;
 
 public class TsvParser {
 
+	/**
+	 * 
+	 * @param inputStream the input file for parsing.
+	 * @return a list of Movie objects.
+	 */
 	public List<Movie> parse(InputStream inputStream) {
 		List<Movie> movies = new ArrayList<>();
 
@@ -29,14 +34,16 @@ public class TsvParser {
 		return movies;
 	}
 	
+	/**
+	 * 
+	 * @param line of in a TSV file.
+	 * @return Movie object with wikiMovieID, freebaseMovieID, title, year,
+				boxOfficeRevenue, length, languages, countries, genres as attributes.
+	 */
 	private Movie parseMovie(String line) {
 
 		List<String> columns = Splitter.on('\t').trimResults()
 				.splitToList(line);
-		// Movie movie = new Movie();
-		// movie.setWikiMovieID(Long.valueOf(columns.get(0)));
-		// movie.setFreebaseMovieID(columns.get(1));
-		// etc.
 		Long wikiMovieID = Long.valueOf(columns.get(0));
 		String freebaseMovieID = columns.get(1);
 		String title = columns.get(2);

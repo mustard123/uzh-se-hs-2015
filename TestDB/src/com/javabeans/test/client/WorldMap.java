@@ -29,6 +29,7 @@ public class WorldMap extends VerticalPanel {
 	private Label totalMoviesFoundlbl;
 	private Label totalMoviesVisualizedlbl;
 
+	
 	public WorldMap(int height, int width, MovieServiceAsync movieService) {
 		this.movieService = movieService;
 		this.mapHeight = height;
@@ -126,7 +127,6 @@ public class WorldMap extends VerticalPanel {
 	}
 
 	// ****GETTER AND SETTER***//
-	
 	public MapQuery getCurrentQuery() {
 		return currentQuery;
 	}

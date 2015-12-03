@@ -18,14 +18,11 @@ public class FileBasedDatabase implements Database {
 	private final FileDataProvider dataProvider;
 	
 	private List<Movie> movieListCache = new ArrayList<>();
-//	TODO Get list of all languages, countries and genre
-//	private List<String> allLanguages = new ArrayList<>();
-//	private List <String> allCountries = new ArrayList<>();
-//	private List<String> allGenres = new ArrayList<>();
 	
 	public FileBasedDatabase(FileDataProvider dataProvider) {
 		this.dataProvider = dataProvider;
 	}
+	
 	
 	@Override
 	public MovieQueryResult query(MovieQuery query) {

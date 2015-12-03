@@ -118,6 +118,5 @@ public class WikiMovieIdComparatorTest {
 		assertEquals(0, output);
 	}
 
-	// TODO cover all cases
 
 }
