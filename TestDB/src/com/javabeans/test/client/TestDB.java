@@ -13,6 +13,8 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
 import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
 import com.google.gwt.user.client.Window;
@@ -27,13 +29,10 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
-
 import com.google.gwt.user.client.ui.ScrollPanel;
-
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.javabeans.test.shared.Movie;
@@ -87,7 +86,7 @@ public class TestDB implements EntryPoint {
 	private ListBox genreField = new ListBox();
 	private Button searchButton = new Button("Search");
 	private Button exportButton = new Button("Export");
-	private Button updateMapButton = new Button("Update Map");
+
 
 	private WorldMap worldMap;
 	private CheckBox toggleUSA = new CheckBox();
@@ -174,11 +173,8 @@ public class TestDB implements EntryPoint {
 		hPanelSlider.add(yearDOWN);
 		hPanelSlider.add(dropBox);
 		hPanelSlider.add(yearUP);
-		hPanelSlider.add(updateMapButton);
-		updateMapButton.setStyleName("rightTop");
 
 		upperPanel.add(exportButton);
-		upperPanel.add(updateMapButton);
 		upperPanel.add(hPanelSlider);
 		upperPanel.add(mapOptionsPanel);
 
@@ -205,7 +201,6 @@ public class TestDB implements EntryPoint {
 
 		hPanelSlider.addStyleName("mapOptionsPanelContent");
 		hPanelSlider.setVisible(false);
-		updateMapButton.setVisible(false);
 		mapOptionsPanel.setVisible(false);
 
 		tabPanel.setHeight("800px");
@@ -259,8 +254,7 @@ public class TestDB implements EntryPoint {
 					currentYear++;
 				}
 				dropBox.setSelectedIndex(currentYear - startYear);
-				worldMap.getCurrentQuery().setYear(currentYear);
-				worldMap.UpdateWorldMap();
+				updateMap();
 			}
 		});
 
@@ -272,19 +266,18 @@ public class TestDB implements EntryPoint {
 					currentYear--;
 				}
 				dropBox.setSelectedIndex(currentYear - startYear);
-				worldMap.getCurrentQuery().setYear(currentYear);
-				worldMap.UpdateWorldMap();
+				updateMap();
 			}
 		});
 
-		updateMapButton.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				worldMap.getCurrentQuery().setYear(getYearFromField());
-				worldMap.getCurrentQuery().setExcludeUs(toggleUSA.getValue());
-				worldMap.UpdateWorldMap();
+		toggleUSA.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+			
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				updateMap();
 			}
 		});
-
+		
 		exportButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				String exportUrl = Window.Location
@@ -387,6 +380,13 @@ public class TestDB implements EntryPoint {
 		});
 	}
 
+	private void updateMap() {
+		worldMap.getCurrentQuery().setYear(currentYear);
+		worldMap.getCurrentQuery().setExcludeUs(toggleUSA.getValue());
+		worldMap.UpdateWorldMap();
+	}
+	
+	
 	private void searchAtEnter(TextBox filter) {
 		filter.addKeyDownHandler(new KeyDownHandler() {
 			public void onKeyDown(KeyDownEvent event) {
@@ -394,7 +394,7 @@ public class TestDB implements EntryPoint {
 					if (!isInMapMode) {
 						searchMovies();
 					} else {
-						worldMap.getCurrentQuery().setYear(getYearFromField());
+						worldMap.getCurrentQuery().setYear(currentYear);
 						worldMap.UpdateWorldMap();
 					}
 					// currentYear=Integer.parseInt(yearField.getText());
@@ -418,7 +418,6 @@ public class TestDB implements EntryPoint {
 			country.setVisible(false);
 			genre.setVisible(false);
 			search.setVisible(false);
-			updateMapButton.setVisible(true);
 			if (getYearFromField() != null) {
 				worldMap.getCurrentQuery().setYear(getYearFromField());
 				worldMap.UpdateWorldMap();
@@ -434,7 +433,6 @@ public class TestDB implements EntryPoint {
 			country.setVisible(true);
 			genre.setVisible(true);
 			search.setVisible(true);
-			updateMapButton.setVisible(false);
 		}
 	}
 
