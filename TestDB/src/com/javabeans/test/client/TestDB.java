@@ -1,5 +1,6 @@
 package com.javabeans.test.client;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -26,10 +27,13 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
+
 import com.google.gwt.user.client.ui.ScrollPanel;
+
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.javabeans.test.shared.Movie;
@@ -112,7 +116,7 @@ public class TestDB implements EntryPoint {
 
 	private TabLayoutPanel tabPanel = new TabLayoutPanel(2.5, Unit.EM);
 
-	private SliderBarSimpleHorizontal mapSliderBarSimpleHorizontal = new SliderBarSimpleHorizontal(8, "80", true);
+	private SliderBarSimpleHorizontal mapSlider = new SliderBarSimpleHorizontal(15, "80", true);
 
 	public void onModuleLoad() {
 		System.out.println("Module starts loading... ");
@@ -164,11 +168,13 @@ public class TestDB implements EntryPoint {
 
 		scrollPanelTable.add(movietable);
 
-		mapSliderBarSimpleHorizontal.setHeight("100px");
-		map.add(mapSliderBarSimpleHorizontal);
-		// hPanelSlider.add(yearDOWN);
-		// hPanelSlider.add(yearUP);
-		// hPanelSlider.add(updateMapButton);
+		mapSlider.setHeight("100px");
+		map.add(mapSlider);
+
+		hPanelSlider.add(yearDOWN);
+		hPanelSlider.add(dropBox);
+		hPanelSlider.add(yearUP);
+		hPanelSlider.add(updateMapButton);
 		updateMapButton.setStyleName("rightTop");
 
 		upperPanel.add(exportButton);
@@ -188,7 +194,7 @@ public class TestDB implements EntryPoint {
 		dropBox.setWidth("100px");
 		yearUP.setHeight("50px");
 		yearDOWN.setHeight("50px");
-		// searchMenu.add(hPanelSlider);
+		searchMenu.add(hPanelSlider);
 		dropBox.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				currentYear = dropBox.getSelectedIndex() + startYear;
@@ -210,11 +216,10 @@ public class TestDB implements EntryPoint {
 		tabPanel.add(new ScrollPanel(map), "map");
 
 		vPanel.add(upperPanel);
-		vPanel.add(mapSliderBarSimpleHorizontal);
 		vPanel.add(tabPanel);
 		vPanel.setWidth("100%");
 
-		mapSliderBarSimpleHorizontal.addBarValueChangedHandler(new BarValueChangedHandler() {
+		mapSlider.addBarValueChangedHandler(new BarValueChangedHandler() {
 
 			public void onBarValueChanged(BarValueChangedEvent event) {
 				// valueBox.setValue("" + event.getValue());
@@ -340,7 +345,9 @@ public class TestDB implements EntryPoint {
 					minYear = Math.min(minYear, year);
 					maxYear = Math.max(maxYear, year);
 					yearField.addItem(year.toString());
+
 				}
+
 			}
 		});
 	}
@@ -391,7 +398,7 @@ public class TestDB implements EntryPoint {
 						worldMap.UpdateWorldMap();
 					}
 					// currentYear=Integer.parseInt(yearField.getText());
-					// dropBox.setSelectedIndex(currentYear - startYear);
+					dropBox.setSelectedIndex(currentYear - startYear);
 					System.out.println("Selected index: " + dropBox.getSelectedIndex());
 					System.out.println("Current year: " + currentYear);
 				}
@@ -403,6 +410,8 @@ public class TestDB implements EntryPoint {
 		if (isInMapMode) {
 			mapOptionsPanel.setVisible(true);
 			hPanelSlider.setVisible(true);
+			mapSlider.setVisible(true);
+			dropBox.setVisible(true);
 			name.setVisible(false);
 			year.setVisible(false);
 			lang.setVisible(false);
@@ -417,6 +426,8 @@ public class TestDB implements EntryPoint {
 		} else {
 			mapOptionsPanel.setVisible(false);
 			hPanelSlider.setVisible(false);
+			mapSlider.setVisible(false);
+			dropBox.setVisible(false);
 			name.setVisible(true);
 			year.setVisible(true);
 			lang.setVisible(true);
