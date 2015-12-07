@@ -1,6 +1,8 @@
 package com.javabeans.test.client;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.javabeans.test.shared.BarChartQuery;
+import com.javabeans.test.shared.BarChartQueryResult;
 import com.javabeans.test.shared.MapQuery;
 import com.javabeans.test.shared.MapQueryResult;
 import com.javabeans.test.shared.MovieQuery;
@@ -16,4 +18,6 @@ public interface MovieServiceAsync {
 	void getMapDataFromServer(MapQuery query, AsyncCallback<MapQueryResult> callback);
 
 	void getSearchFormData(AsyncCallback<SearchFormData> callback);
+
+	void getBarChartDataFromServer(BarChartQuery query, AsyncCallback<BarChartQueryResult> callback);
 }

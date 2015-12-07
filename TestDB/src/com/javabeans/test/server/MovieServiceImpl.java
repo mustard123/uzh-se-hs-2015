@@ -10,6 +10,8 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.javabeans.test.client.MovieService;
 import com.javabeans.test.server.bla.Database;
 import com.javabeans.test.server.bla.DatabaseFactory;
+import com.javabeans.test.shared.BarChartQuery;
+import com.javabeans.test.shared.BarChartQueryResult;
 import com.javabeans.test.shared.CountryCounter;
 import com.javabeans.test.shared.MapQuery;
 import com.javabeans.test.shared.MapQueryResult;
@@ -60,6 +62,94 @@ public class MovieServiceImpl extends RemoteServiceServlet implements MovieServi
 		Collections.sort(data.getYears());
 		return data;
 	}
+	
+	//NEW BARCHART
+		@Override
+		public BarChartQueryResult getBarChartDataFromServer(BarChartQuery query)
+		{
+			System.out.println("BarChartQueryResult reached");
+			
+			
+			MovieQuery databaseQuery = new MovieQuery();
+			
+			databaseQuery.setCountry(query.getCountry());
+			databaseQuery.setGenre(query.getGenre());
+			databaseQuery.setLanguage(query.getLanguage());
+			databaseQuery.setName(query.getName());
+			databaseQuery.setYear(query.getYear());
+			
+			MovieQueryResult moviesResult = database.query(databaseQuery);
+			List<Movie> movieList=moviesResult.getMovies();
+			
+			
+			/*
+			 * 0:	0 	-	20	min
+			 * 1:	20	-	40 
+			 * 2:	40	-	60
+			 * 3:	60 	- 	80
+			 * 4:	80	-	100
+			 * 5:	100	-	120
+			 * 6:	120	-	140
+			 * 7: 	140 -	160
+			 * 8:	160 - 	180
+			 * 9:	180	-	n
+			 */
+			int[] movieLengthList=new int[10];
+			
+			//iterate over all movies, add each movie into the movieLengthList
+			
+			for(Movie movie : movieList)
+			{
+				if(!movie.getLength().isEmpty()){
+
+					double temp = Double.parseDouble(movie.getLength());
+					
+					int movieLength = (int)temp;
+					
+					if(movieLength<20)
+					{
+						movieLengthList[0]++;
+					}else if(movieLength < 40)
+					{
+						movieLengthList[1]++;
+					}else if(movieLength < 60)
+					{
+						movieLengthList[2]++;
+					}else if(movieLength < 80)
+					{
+						movieLengthList[3]++;
+					}else if(movieLength < 100)
+					{
+						movieLengthList[4]++;
+					}else if(movieLength < 120)
+					{
+						movieLengthList[5]++;
+					}else if(movieLength < 140)
+					{
+						movieLengthList[6]++;
+					}else if(movieLength < 160)
+					{
+						movieLengthList[7]++;
+					}
+					else if(movieLength < 180)
+					{
+						movieLengthList[8]++;
+					}else if(movieLength >= 180)
+					{
+						movieLengthList[9]++;
+					}
+					
+				}
+				
+			}
+			
+			BarChartQueryResult result=new BarChartQueryResult();
+			result.setMovieLengthList(movieLengthList);
+			System.out.println("return reached");
+			
+			return result;
+			
+		}
 
 	@Override
 	public MapQueryResult getMapDataFromServer(MapQuery query) {

@@ -56,6 +56,8 @@ public class TestDB implements EntryPoint {
 	private int endYear = 2015;
 
 	private boolean isInMapMode = false;
+	//NEW BARCHART
+	private boolean isInDistributionMode=false;
 
 	private final MovieServiceAsync movieService = GWT.create(MovieService.class);
 
@@ -87,6 +89,9 @@ public class TestDB implements EntryPoint {
 	private Button searchButton = new Button("Search");
 	private Button exportButton = new Button("Export");
 
+	//NEW BARCHART
+	private BarChartPanel barChart;
+	private VerticalPanel barChartPanel = new VerticalPanel();
 
 	private WorldMap worldMap;
 	private CheckBox toggleUSA = new CheckBox();
@@ -209,6 +214,8 @@ public class TestDB implements EntryPoint {
 
 		tabPanel.add(scrollPanelTable, "table");
 		tabPanel.add(new ScrollPanel(map), "map");
+		tabPanel.add(new ScrollPanel(barChartPanel), "Movie Duration Distribution");
+
 
 		vPanel.add(upperPanel);
 		vPanel.add(tabPanel);
@@ -244,6 +251,9 @@ public class TestDB implements EntryPoint {
 		map.add(worldMap);
 		worldMap.setTotalMoviesFound(totalMoviesFound);
 		worldMap.setTotalMoviesVisualized(totalMoviesVisualized);
+		
+		barChart=new BarChartPanel(600,800,movieService);
+		barChartPanel.add(barChart);
 
 		RootPanel.get().add(vPanel);
 		yearUP.addClickHandler(new ClickHandler() {
@@ -293,14 +303,22 @@ public class TestDB implements EntryPoint {
 				Window.Location.replace(exportUrl);
 			}
 		});
+		
 		tabPanel.addSelectionHandler(new SelectionHandler<Integer>() {
 			public void onSelection(SelectionEvent<Integer> event) {
 				int tabId = event.getSelectedItem();
 				if (tabId == 0) {
 					isInMapMode = false;
+					isInDistributionMode = false;
 					toggleMapMode();
-				} else {
+				} else if(tabId == 2){
+					isInMapMode=false;
+					isInDistributionMode = true;
+					toggleMapMode();
+					
+				}else {
 					isInMapMode = true;
+					isInDistributionMode = false;
 					toggleMapMode();
 				}
 			}
@@ -352,6 +370,9 @@ public class TestDB implements EntryPoint {
 		currentQuery.setLanguage(languageField.getValue(languageField.getSelectedIndex()));
 		currentQuery.setGenre(genreField.getValue(genreField.getSelectedIndex()));
 		updateMovies(0, movietable.getTable().getVisibleRange().getLength());
+		
+		barChart.setCurrentBarChartQuery(currentQuery);
+		
 	}
 
 	private void updateMovies(int start, int length) {
@@ -391,11 +412,15 @@ public class TestDB implements EntryPoint {
 		filter.addKeyDownHandler(new KeyDownHandler() {
 			public void onKeyDown(KeyDownEvent event) {
 				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-					if (!isInMapMode) {
+					if (!isInMapMode && !isInDistributionMode) {
 						searchMovies();
-					} else {
-						worldMap.getCurrentQuery().setYear(currentYear);
+					} else if(isInMapMode) {
+						worldMap.getCurrentQuery().setYear(getYearFromField());
 						worldMap.UpdateWorldMap();
+					}else
+					{
+						searchMovies();
+						System.out.println("Enter in DistributionMode");
 					}
 					// currentYear=Integer.parseInt(yearField.getText());
 					dropBox.setSelectedIndex(currentYear - startYear);
@@ -410,8 +435,6 @@ public class TestDB implements EntryPoint {
 		if (isInMapMode) {
 			mapOptionsPanel.setVisible(true);
 			hPanelSlider.setVisible(true);
-			mapSlider.setVisible(true);
-			dropBox.setVisible(true);
 			name.setVisible(false);
 			year.setVisible(false);
 			lang.setVisible(false);
@@ -422,7 +445,7 @@ public class TestDB implements EntryPoint {
 				worldMap.getCurrentQuery().setYear(getYearFromField());
 				worldMap.UpdateWorldMap();
 			}
-		} else {
+		} else if(isInDistributionMode){
 			mapOptionsPanel.setVisible(false);
 			hPanelSlider.setVisible(false);
 			mapSlider.setVisible(false);
@@ -433,6 +456,22 @@ public class TestDB implements EntryPoint {
 			country.setVisible(true);
 			genre.setVisible(true);
 			search.setVisible(true);
+			
+			//NEW BARCHART
+			barChart.setCurrentBarChartQuery(currentQuery);
+			
+
+		}else {
+		
+			mapOptionsPanel.setVisible(false);
+			hPanelSlider.setVisible(false);
+			name.setVisible(true);
+			year.setVisible(true);
+			lang.setVisible(true);
+			country.setVisible(true);
+			genre.setVisible(true);
+			search.setVisible(true);
+
 		}
 	}
 

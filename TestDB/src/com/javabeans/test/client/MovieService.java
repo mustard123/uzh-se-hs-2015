@@ -2,6 +2,8 @@ package com.javabeans.test.client;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.javabeans.test.shared.BarChartQuery;
+import com.javabeans.test.shared.BarChartQueryResult;
 import com.javabeans.test.shared.CountryCounter;
 import com.javabeans.test.shared.MapQuery;
 import com.javabeans.test.shared.MapQueryResult;
@@ -37,6 +39,8 @@ public interface MovieService extends RemoteService {
 	 * @return a container with languages, genres, countries and years for the listboxes.
 	 */
 	SearchFormData getSearchFormData();
+
+	BarChartQueryResult getBarChartDataFromServer(BarChartQuery query);
 	
 	// add methods here to get data from the server (e.g., all available
 	// languages)
