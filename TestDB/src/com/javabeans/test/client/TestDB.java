@@ -51,48 +51,27 @@ public class TestDB implements EntryPoint {
 
 	private final Logger LOGGER = Logger.getLogger(TestDB.class.getSimpleName());
 
-	private int currentYear = 2015;
-	private int startYear = 1888;
-	private int endYear = 2015;
 
 	private boolean isInMapMode = false;
-	//NEW BARCHART
-	private boolean isInDistributionMode=false;
-
+	
+	// NEW BARCHART
+	private boolean isInDistributionMode = false;
 	private final MovieServiceAsync movieService = GWT.create(MovieService.class);
 
-	private HorizontalPanel hPanelSlider = new HorizontalPanel();
-
-	private ListBox dropBox = new ListBox(true);
-
-	private Button yearUP = new Button("year UP");
-	private Button yearDOWN = new Button("year DOWN");
-
+	
 	private VerticalPanel vPanel = new VerticalPanel();
-	private ScrollPanel scrollPanelTable = new ScrollPanel();
+	private HorizontalPanel hPanel=new HorizontalPanel();
 	private VerticalPanel map = new VerticalPanel();
-	private FlowPanel searchMenu = new FlowPanel();
 
-	private HorizontalPanel name = new HorizontalPanel();
-	private HorizontalPanel year = new HorizontalPanel();
-	private HorizontalPanel lang = new HorizontalPanel();
-	private HorizontalPanel country = new HorizontalPanel();
-	private HorizontalPanel genre = new HorizontalPanel();
-	private HorizontalPanel search = new HorizontalPanel();
-	private HorizontalPanel upperPanel = new HorizontalPanel();
+	// TabLayout with Scrollable
+	private TabLayoutPanel tabPanel = new TabLayoutPanel(2.5, Unit.EM);
+	private ScrollPanel scrollPanelTable = new ScrollPanel();
 
-	private TextBox nameField = new TextBox();
-	private ListBox yearField = new ListBox();
-	private ListBox countryField = new ListBox();
-	private ListBox languageField = new ListBox();
-	private ListBox genreField = new ListBox();
-	private Button searchButton = new Button("Search");
-	private Button exportButton = new Button("Export");
-
-	//NEW BARCHART
+	// NEW BARCHART
 	private BarChartPanel barChart;
 	private VerticalPanel barChartPanel = new VerticalPanel();
 
+	// MAP
 	private WorldMap worldMap;
 	private CheckBox toggleUSA = new CheckBox();
 	private Label toggleUSAlbl = new Label("Toggle USA");
@@ -102,6 +81,38 @@ public class TestDB implements EntryPoint {
 	private VerticalPanel mapInfo = new VerticalPanel();
 	private HorizontalPanel toggleUSContainer = new HorizontalPanel();
 
+	// SLIDER
+	private int currentYear = 2015;
+	private int startYear = 1888;
+	private int endYear = 2015;
+	private HorizontalPanel hPanelSlider = new HorizontalPanel();
+	private ListBox dropBox = new ListBox(true);
+	private Button yearUP = new Button("year UP");
+	private Button yearDOWN = new Button("year DOWN");
+	
+	// Search Menu
+	private VerticalPanel searchMenu = new VerticalPanel();
+	private HorizontalPanel firstDropDown = new HorizontalPanel();
+	private HorizontalPanel secondDropDown = new HorizontalPanel();
+	private HorizontalPanel buttons=new HorizontalPanel();
+	private HorizontalPanel name = new HorizontalPanel();
+	private HorizontalPanel year = new HorizontalPanel();
+	private HorizontalPanel lang = new HorizontalPanel();
+	private HorizontalPanel country = new HorizontalPanel();
+	private HorizontalPanel genre = new HorizontalPanel();
+	private HorizontalPanel search = new HorizontalPanel();
+	private HorizontalPanel upperPanel = new HorizontalPanel();
+
+	private Label titleLabel = new Label("Title");
+	private TextBox nameField = new TextBox();
+	private ListBox yearField = new ListBox();
+	private ListBox countryField = new ListBox();
+	private ListBox languageField = new ListBox();
+	private ListBox genreField = new ListBox();
+	private Button searchButton = new Button("Search");
+	private Button exportButton = new Button("Export table");
+
+	// ADD and Source
 	private Image addPlaceholder = new Image("/images/banana_2.gif");
 	private Label sourceLabel = new HTML();
 	private Anchor licenseLink = new Anchor("All data are published under the following License",
@@ -116,28 +127,22 @@ public class TestDB implements EntryPoint {
 		}
 	};
 
-	private Label titleLabel = new Label("Title");
-
-	private TabLayoutPanel tabPanel = new TabLayoutPanel(2.5, Unit.EM);
-
 	private SliderBarSimpleHorizontal mapSlider = new SliderBarSimpleHorizontal(15, "80", true);
 
 	public void onModuleLoad() {
 		System.out.println("Module starts loading... ");
-		vPanel.add(addPlaceholder);
+		vPanel.setWidth("100%");
+		upperPanel.setHeight("130px");
+		addPlaceholder.setHeight("170px");
+		
+		hPanel.setWidth("100%");
+		hPanel.add(searchMenu);
+		upperPanel.add(hPanel);
 
-		searchMenu.setWidth("100%");
-		upperPanel.add(searchMenu);
+		//SearchMenu
+	
 
-		name.setStyleName("flowPanel_inline");
-		year.setStyleName("flowPanel_inline");
-		lang.setStyleName("flowPanel_inline");
-		country.setStyleName("flowPanel_inline");
-		genre.setStyleName("flowPanel_inline");
-		search.setStyleName("flowPanel_inline");
-		searchButton.setStyleName("flowPanel_inline");
-		exportButton.setStyleName("rightTop");
-
+		titleLabel.setStyleName("label");
 		name.add(titleLabel);
 		name.add(nameField);
 		year.add(yearField);
@@ -145,13 +150,17 @@ public class TestDB implements EntryPoint {
 		country.add(countryField);
 		genre.add(genreField);
 		search.add(searchButton);
-
+		firstDropDown.add(year);
+		firstDropDown.add(lang);
+		secondDropDown.add(country);
+		secondDropDown.add(genre);
+		buttons.add(search);
+		
+		buttons.add(exportButton);
 		searchMenu.add(name);
-		searchMenu.add(year);
-		searchMenu.add(lang);
-		searchMenu.add(country);
-		searchMenu.add(genre);
-		searchMenu.add(search);
+		searchMenu.add(firstDropDown);
+		searchMenu.add(secondDropDown);
+		searchMenu.add(buttons);
 
 		// ALL MAP UI ELEMENTS
 		toggleUSAlbl.addStyleName("mapOptionsPanelContent");
@@ -172,17 +181,18 @@ public class TestDB implements EntryPoint {
 
 		scrollPanelTable.add(movietable);
 
-		mapSlider.setHeight("100px");
-		map.add(mapSlider);
-
+		
+		// Elements for Slider
+		hPanelSlider.setStyleName("hPanelSlider");
+		dropBox.removeStyleName("gwt-ListBox");
 		hPanelSlider.add(yearDOWN);
 		hPanelSlider.add(dropBox);
 		hPanelSlider.add(yearUP);
-
-		upperPanel.add(exportButton);
-		upperPanel.add(hPanelSlider);
-		upperPanel.add(mapOptionsPanel);
-
+		
+//		upperPanel.add(hPanelSlider);
+//		upperPanel.add(mapOptionsPanel);
+		hPanel.add(hPanelSlider);
+		hPanel.add(mapOptionsPanel);
 		for (int i = startYear; i < endYear + 1; i++) {
 			String year = Integer.toString(i);
 
@@ -208,15 +218,14 @@ public class TestDB implements EntryPoint {
 		hPanelSlider.setVisible(false);
 		mapOptionsPanel.setVisible(false);
 
-		tabPanel.setHeight("800px");
+		tabPanel.setHeight("700px");
 		tabPanel.setAnimationDuration(1000);
 		tabPanel.getElement().getStyle().setMarginBottom(10.0, Unit.PX);
 
 		tabPanel.add(scrollPanelTable, "table");
 		tabPanel.add(new ScrollPanel(map), "map");
 		tabPanel.add(new ScrollPanel(barChartPanel), "Movie Duration Distribution");
-
-
+		hPanel.add(addPlaceholder);
 		vPanel.add(upperPanel);
 		vPanel.add(tabPanel);
 		vPanel.setWidth("100%");
@@ -247,12 +256,12 @@ public class TestDB implements EntryPoint {
 		movietable.getTable().addColumnSortHandler(columnSortHandler);
 
 		// Assign worldMap Attributes
-		worldMap = new WorldMap(700, 1200, movieService);
+		worldMap = new WorldMap(600, 1200, movieService);
 		map.add(worldMap);
 		worldMap.setTotalMoviesFound(totalMoviesFound);
 		worldMap.setTotalMoviesVisualized(totalMoviesVisualized);
-		
-		barChart=new BarChartPanel(600,800,movieService);
+
+		barChart = new BarChartPanel(600, 800, movieService);
 		barChartPanel.add(barChart);
 
 		RootPanel.get().add(vPanel);
@@ -311,8 +320,8 @@ public class TestDB implements EntryPoint {
 					isInMapMode = false;
 					isInDistributionMode = false;
 					toggleMapMode();
-				} else if(tabId == 2){
-					isInMapMode=false;
+				} else if (tabId == 2) {
+					isInMapMode = false;
 					isInDistributionMode = true;
 					toggleMapMode();
 					
@@ -422,7 +431,6 @@ public class TestDB implements EntryPoint {
 						searchMovies();
 						System.out.println("Enter in DistributionMode");
 					}
-					// currentYear=Integer.parseInt(yearField.getText());
 					dropBox.setSelectedIndex(currentYear - startYear);
 					System.out.println("Selected index: " + dropBox.getSelectedIndex());
 					System.out.println("Current year: " + currentYear);
@@ -435,7 +443,11 @@ public class TestDB implements EntryPoint {
 		if (isInMapMode) {
 			mapOptionsPanel.setVisible(true);
 			hPanelSlider.setVisible(true);
+			addPlaceholder.setVisible(true);
 			name.setVisible(false);
+			dropBox.setVisible(true);
+
+			exportButton.setVisible(false);
 			year.setVisible(false);
 			lang.setVisible(false);
 			country.setVisible(false);
@@ -450,6 +462,8 @@ public class TestDB implements EntryPoint {
 			hPanelSlider.setVisible(false);
 			mapSlider.setVisible(false);
 			dropBox.setVisible(false);
+			exportButton.setVisible(false);
+
 			name.setVisible(true);
 			year.setVisible(true);
 			lang.setVisible(true);
@@ -457,7 +471,9 @@ public class TestDB implements EntryPoint {
 			genre.setVisible(true);
 			search.setVisible(true);
 			
-			//NEW BARCHART
+			addPlaceholder.setVisible(true);
+
+			// NEW BARCHART
 			barChart.setCurrentBarChartQuery(currentQuery);
 			
 
@@ -471,6 +487,7 @@ public class TestDB implements EntryPoint {
 			country.setVisible(true);
 			genre.setVisible(true);
 			search.setVisible(true);
+			exportButton.setVisible(true);
 
 		}
 	}
